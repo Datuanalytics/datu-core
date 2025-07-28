@@ -308,29 +308,8 @@ async def chat_with_llm(request: ChatRequest):
             system_prompt = request.system_prompt
 
         logger.debug("Received chat messages: %s", request.messages)
-        if settings.enable_anonymization:
-            try:
-                from datu.anonymization.base_anonymizer import PiiAnonymizer
-
-                anonymizer = PiiAnonymizer()
-                messages = [
-                    {"role": msg.role, "content": anonymizer.anonymize(msg.content)} for msg in request.messages
-                ]
-                llm_response = generate_response(messages, system_prompt)
-                llm_response = anonymizer.deanonymize(llm_response)
-            except ImportError:
-                logger.error(
-                    (
-                        "Anonymization module not found. Please ensure 'anonymizer' feature is enabled and "
-                        "installed. Proceeding without anonymization."
-                    )
-                )
-                messages = [{"role": msg.role, "content": msg.content} for msg in request.messages]
-                llm_response = generate_response(messages, system_prompt)
-
-        else:
-            messages = [{"role": msg.role, "content": msg.content} for msg in request.messages]
-            llm_response = generate_response(messages, system_prompt)
+        messages = [{"role": msg.role, "content": msg.content} for msg in request.messages]
+        llm_response = generate_response(messages, system_prompt)
         logger.debug("LLM response: %s", llm_response)
 
         # Validate and fix SQL in the LLM response.
