@@ -1,0 +1,5 @@
+.env
+frontend
+node_modules
+docker-compose.yml
+schema_cache.json

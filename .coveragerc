@@ -1,0 +1,11 @@
+[run]
+branch = True
+omit =
+   */tests/*
+
+[report]
+show_missing = True
+skip_empty = True
+exclude_also =
+    @(abc\\.)?abstractmethod
+    if TYPE_CHECKING:

@@ -1,0 +1,13 @@
+{
+    "recommendations": [
+        "njpwerner.autodocstring",
+        "littlefoxteam.vscode-python-test-adapter",
+        "charliermarsh.ruff",
+        "ms-pyright.pyright",
+        "ms-python.vscode-pylance",
+        "tamasfe.even-better-toml",
+        "yzhang.markdown-all-in-one",
+        "bierner.markdown-mermaid",
+        "ms-python.mypy-type-checker"
+    ]
+}

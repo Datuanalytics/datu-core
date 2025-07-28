@@ -1,0 +1,81 @@
+version: '3'
+
+vars:
+  DATU_VERSION:
+    sh: hatch version
+
+tasks:
+  server-start:
+    cmds:
+      - |-
+        echo "Running datu..."
+        # Start the postgres service as it is current datu's dependency
+        uv sync --all-groups --all-extras
+        docker-compose --profile postgres up postgres -d 
+        uv run datu
+  server-container-start:
+    cmds:
+      - |-
+        echo "Running datu on docker container..."
+        echo "Note!!!! Remember to use the service names in .env file for connecting to postgres DB_HOST=postgres"
+        docker-compose --profile server --profile postgres up -d
+  server-container-stop:
+    cmds:
+      - |-
+        echo "Stopping datu on docker container..."
+        docker-compose --profile server --profile postgres down
+  test:
+    cmds:
+      - |-
+        echo "Running tests..."
+        uv run pytest tests
+  postgres-start:
+    cmds:
+      - |-
+        echo "Starting postgres..."
+        docker-compose --profile postgres up postgres -d
+
+  postgres-stop:
+    cmds:
+      - |-
+        echo "Stopping postgres..."
+        docker-compose --profile postgres down
+
+  sqlserver-start:
+    cmds:
+      - |-
+        echo "Starting sqlserver..."
+        docker-compose --profile sqlserver up -d
+
+  sqlserver-stop:
+    cmds:
+      - |-
+        echo "Stopping sqlserver..."
+        docker-compose --profile sqlserver down
+  
+  draft-changelog:
+    cmds:
+      - |
+        echo "Generating draft changelog for {{.DATU_VERSION}}"
+        uv run towncrier build --yes --version {{.DATU_VERSION}} --draft
+        
+  
+  release-changelog:
+    cmds:
+      - |-
+        echo "Generating release changelog..."
+        uv run towncrier build --yes --version {{.DATU_VERSION}}
+
+  install-quality-check:
+    cmds:
+      - |-
+        echo "Installing pre-commit hooks..."
+        uv run pre-commit install
+
+  quality-check:
+    cmds:
+      - |-
+        echo "Running quality check..."
+        uv run pre-commit run --all-files
+  
+

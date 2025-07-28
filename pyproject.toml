@@ -1,0 +1,339 @@
+[project]
+name = "datu"
+dynamic = ["version"]
+description = "LLM-Driven Data Transformations"
+readme = "README.md"
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  ]
+requires-python = ">=3.10,<3.13"
+
+dependencies = [
+    "fastapi>=0.115.11",
+    "uvicorn>=0.22.0",
+    "langchain>=0.3",
+    "langchain-community>=0.3,<0.4",
+    "langchain-openai>=0.3,<0.4",
+    "pydantic-settings>=2.8.1",
+    "types-psycopg2>=2.9.21.20250318",
+    "dbt-core>=1.9.3",
+    "types-pyyaml>=6.0.12.20250402",
+    "sql-metadata>=2.17.0",
+    "sentence-transformers>=2.5.1",
+    "torch==2.2.2",
+    "numpy<2.0.0",
+    "networkx>=3.0",
+    "langgraph>=0.0.37",
+    "langchain-core>=0.1.41",
+    "langchain-mcp-adapters>=0.1.8",
+    "openai>=1.30.1",
+    "fastmcp>=2.10.5" 
+]
+
+[project.urls]
+Homepage = "https://datu.fi"
+"Bug Tracker" = "https://github.com/Datuanalytics/datu-core/issues"
+Documentation = "https://docs.datu.fi"
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "httpx",
+    "ruff",
+    "mypy",
+    "tox",
+    "toml>=0.10.2",
+    "types-toml>=0.10.8.20240310",
+    "tomlkit>=0.13.2",
+    "towncrier>=24.8.0",
+    "types-networkx>=3.5.0",
+    "pre-commit>=4.2.0",
+    "pylint>=3.3.6",
+    "responses>=0.25.7",
+    "bandit>=1.8.3",
+    "hatch>=1.0.0,<2.0.0",
+    "hatch-vcs>=0.3.0,<1.0.0",
+    "pytest-asyncio>=0.23.0",
+]
+postgres = [
+    "psycopg2-binary>=2.9.6",
+    "dbt-postgres>=1.9.0",
+]
+sqldb = [
+    "pyodbc>=5.2.0",
+]
+docs = [
+    "sphinx>=5.0.0,<6.0.0",
+    "sphinx-rtd-theme>=1.0.0,<2.0.0",
+    "sphinx-autodoc-typehints>=1.12.0,<2.0.0",
+    "mkdocs~=1.6.1",
+    "mkdocs-macros-plugin~=1.3.7",
+    "mkdocs-material~=9.6.12",
+    "mkdocs-macros-plugin~=1.3.7",
+    "mkdocstrings-python~=1.16.10"
+]
+anonymizer = [
+    "presidio-analyzer>=2.2.358",
+    "presidio-anonymizer>=2.2.358",
+    "spacy>=3.8.6",
+    "en-core-web-lg @ https://github.com/explosion/spacy-models/releases/download/en_core_web_lg-3.8.0/en_core_web_lg-3.8.0-py3-none-any.whl"
+]
+
+[[project.maintainers]]
+name = "Datu"
+email = "maintainers@datu.fi"
+
+[project.license]
+file = "LICENSE"
+
+[project.scripts]
+datu = "datu.main:start_app"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/datu",
+]
+
+[tool.hatch.build.targets.wheel]
+include = [
+    "src/datu",
+]
+
+[tool.hatch.build.targets.wheel.sources]
+"src/datu" = "datu"
+
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[tool.hatch.envs.default]
+installer = "uv"
+
+[tool.hatch.version]
+# Tells Hatch to use your version control system (git) to determine the version.
+source = "vcs"
+fallback-version = "0.1.0"
+
+[tool.hatch.envs.hatch-static-analysis]
+features = ["dev", "postgres", "sqldb", "anonymizer"]
+dependencies = [
+  "mypy",
+  "ruff",
+  "bandit",
+  "pylint",
+  "datu @ {root:uri}"
+]
+
+[tool.hatch.envs.hatch-static-analysis.scripts]
+format-check = [
+    "uv run ruff format --check"
+]
+format-fix = [
+    "uv run ruff format"
+]
+lint-check = [
+    "uv run ruff check",
+    "uv run mypy src/datu",
+    "uv run bandit -r src/datu",
+    "uv run pylint --rcfile=.pylintrc --source-roots=src/datu src",
+    "uv run pylint --rcfile=.pylintrc --source-roots=src/datu tests"
+]
+lint-fix = [
+    "uv run ruff check --fix"
+]
+
+[tool.hatch.envs.hatch-test]
+features = ["postgres", "sqldb", "dev", "anonymizer"]
+extra-dependencies = [
+]
+extra-args = [
+    "-n",
+    "auto",
+    "-vv",
+]
+
+[tool.hatch.envs.dev]
+dev-mode = true
+features = ["dev", "postgres", "sqldb", "docs", "anonymizer"]
+
+
+
+[[tool.hatch.envs.hatch-test.matrix]]
+python = ["3.12", "3.11", "3.10"]
+
+
+[tool.hatch.envs.hatch-test.scripts]
+run = [
+    "pytest{env:HATCH_TEST_ARGS:} {args}"
+]
+run-cov = [
+    "pytest{env:HATCH_TEST_ARGS:} --cov --cov-config=pyproject.toml {args}"
+]
+
+cov-combine = []
+cov-report = []
+
+
+[tool.hatch.envs.default.scripts]
+list = [
+    "echo 'Scripts commands available for default env:'; hatch env show --json | jq --raw-output '.default.scripts | keys[]'"
+]
+format = [
+  "hatch fmt --formatter",
+]
+test-format = [
+    "hatch fmt --formatter --check",
+]
+lint = [
+    "hatch fmt --linter"
+]
+test-lint = [
+    "hatch fmt --linter --check"
+]
+test = [
+    "hatch test --cover --cov-report html --cov-report xml {args}"
+]
+test-integ = [
+    "hatch test tests-integ {args}"
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+markers = [
+  "no_env: Mark test without a need for loading environment variables from .env.test file",
+]
+testpaths = [
+    "tests"
+]
+
+[tool.coverage.run]
+branch = true
+source = ["src"]
+context = "thread"
+parallel = true
+concurrency = ["thread", "multiprocessing"]
+
+[tool.coverage.html]
+directory = "build/coverage/html"
+
+[tool.coverage.xml]
+output = "build/coverage/coverage.xml"
+
+[tool.uv]
+environments = ["sys_platform == 'darwin'", "sys_platform == 'linux'", "sys_platform == 'win32'"]
+
+[tool.uv.sources]
+en-core-web-lg = { url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_lg-3.8.0/en_core_web_lg-3.8.0-py3-none-any.whl" }
+
+[tool.ruff]
+line-length = 120
+indent-width = 4
+# use python 3.10 as the minium target version
+target-version = "py310"
+
+extend-include = ["*.ipynb"]
+include = ["src/**/*.py", "tests/**/*.py"]
+
+[tool.ruff.format]
+docstring-code-format = true
+docstring-code-line-length = 88
+exclude = [".git", ".venv", "build", "dist"]
+
+[tool.ruff.lint]
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+select = [
+  "B", # flake8-bugbear
+#   "D", # pydocstyle # enable back later
+  "E", # pycodestyle
+  "F", # pyflakes
+  "I", # isort
+]              # Select the checks you want to enable
+ignore = [
+  "E402", # module-import-not-at-top-of-file
+]
+
+[tool.ruff.lint.isort]
+forced-separate = ["tests"]
+
+[tool.ruff.lint.pydocstyle]
+# Use Google-style docstrings.
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+"!src/**/*.py" = ["D"] # Ignore docstring checks in non-package files
+
+[tool.mypy]
+python_version = "3.10"
+# warn_return_any = true
+# warn_unused_configs = true
+# disallow_untyped_calls = true
+# disallow_untyped_defs = true
+# check_untyped_defs = true
+# warn_redundant_casts = true
+# warn_unused_ignores = true
+# warn_unreachable = true
+# show_error_context = true
+
+[[tool.mypy.overrides]]
+module = "pyodbc"
+ignore_missing_imports = true
+[[tool.mypy.overrides]]
+module = "sql_metadata"
+ignore_missing_imports = true
+[[tool.mypy.overrides]]
+module = "langchain_mcp_adapters"
+ignore_missing_imports = true
+[[tool.mypy.overrides]]
+module = "langchain_mcp_adapters.client"
+ignore_missing_imports = true
+[[tool.mypy.overrides]]
+module = "langchain_mcp_adapters.tools"
+ignore_missing_imports = true
+
+[tool.towncrier]
+directory = "changelog.d"
+filename = "CHANGELOG.md"
+package = "datu"
+package_dir = "src"
+start_string = "<!-- towncrier release notes start -->\n"
+underlines = ["", "", ""]
+title_format = "## [{version}](https://github.com/Datuanalytics/datu-analytics/tree/{version}) - {project_date}"
+issue_format = "[#{issue}](https://github.com/Datuanalytics/datu-analytics/issues/{issue})"
+
+[[tool.towncrier.type]]
+directory = "security"
+name = "Security"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "removed"
+name = "Removed"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "deprecated"
+name = "Deprecated"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "added"
+name = "Added"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "changed"
+name = "Changed"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "fixed"
+name = "Fixed"
+showcontent = true

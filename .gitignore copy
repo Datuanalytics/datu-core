@@ -1,0 +1,64 @@
+# These are ignored file patterns.
+
+# Schema cache
+schema_cache.json
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+.env
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE / Editor files
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Node modules (if using Node)
+node_modules/
+
+*.lock
+*.python-version
+
+# RAG / Graph outputs (if using schemaRAG)
+graph_cache/
+
+# **Un-ignore the frontend build artifacts inside src/datu/server/**
+!src/datu/server/build/
+
+.user.yml
+target/
+datu-postgres/
+datu-sqlserver/
+test_schema_cache.json
+
+.cache/
+site/

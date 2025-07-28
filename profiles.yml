@@ -1,0 +1,20 @@
+datu_demo:
+  target: dev-postgres
+  outputs:
+    dev-postgres:
+      type: postgres
+      host: "{{ env_var('DB_HOST', 'localhost') }}"  # Fallback to 'localhost' if DB_HOST is not found for azure deployment workaround
+      port: 5432
+      user: postgres
+      password: postgres
+      dbname: my_sap_bronze
+      schema: bronze
+    # dev-sqlserver:
+    #   type: sqlserver
+    #   driver: 'ODBC Driver 18 for SQL Server' # https://learn.microsoft.com/en-us/sql/connect/python/pyodbc/step-1-configure-development-environment-for-pyodbc-python-development?view=sql-server-ver16&tabs=macos
+    #   host: localhost
+    #   port: 1433
+    #   user: sa
+    #   password: Password123!
+    #   dbname: my_sap_bronze
+    #   schema: bronze
