@@ -1,5 +1,5 @@
 [project]
-name = "datu"
+name = "datu-core"
 dynamic = ["version"]
 description = "LLM-Driven Data Transformations"
 readme = "README.md"
@@ -114,7 +114,7 @@ installer = "uv"
 [tool.hatch.version]
 # Tells Hatch to use your version control system (git) to determine the version.
 source = "vcs"
-fallback-version = "0.1.0"
+fallback-version = "0.0.1"
 
 [tool.hatch.envs.hatch-static-analysis]
 features = ["dev", "postgres", "sqldb"]
