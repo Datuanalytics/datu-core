@@ -14,7 +14,6 @@ from typing import Literal
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from datu.anonymization.config import AnonymizationConfig
 from datu.integrations.config import IntegrationConfigs
 from datu.services.config import SchemaRAGConfig
 
@@ -101,10 +100,6 @@ class DatuConfig(BaseSettings):
         description="Configuration settings for schema RAG (Retrieval-Augmented Generation).",
     )
     enable_anonymization: bool = False
-    anonymization: AnonymizationConfig | None = Field(
-        default_factory=AnonymizationConfig,
-        description="Configuration settings for anonymization features.",
-    )
 
     model_config = SettingsConfigDict(
         env_prefix="datu_",
