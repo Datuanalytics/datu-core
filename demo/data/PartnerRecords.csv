@@ -1,0 +1,101 @@
+PartnerID,PartnerName,Location,Industry,ContactPerson,Email,Active
+1000,Global Tech Inc. .,San Francisco,Retail,Emily Davis,support@nextgen.com,False
+1001,Innovatech Holdings Inc.,San Francisco,Finance,Alice Johnson,contact@acme.com,False
+1002,Vertex Dynamics Ltd..,New York,Energy,Jane Smith,sales@synergy.com,True
+1003,QuantumSoft Incorporation,Seattle,Retail,Emily Davis,hello@blueocean.com,True
+1004,Innovatech Holdings Inc. .,Los Angeles,Energy,Alice Johnson,hello@blueocean.com,True
+1005,Acme Corporation Ltd..,Chicago,Technology,Jane Smith,contact@acme.com,False
+1006,FutureVision Co. .,Seattle,Education,John Doe,sales@synergy.com,True
+1007,NextGen Solutions Co..,Seattle,Energy,Emily Davis,contact@acme.com,True
+1008,QuantumSoft Inc..,Miami,Technology,John Doe,contact@acme.com,True
+1009,Vertex Dynamics Ltd.,Miami,Energy,Robert Brown,sales@synergy.com,False
+1010,Pinnacle Systems Co.,Chicago,Education,Jane Smith,info@globaltech.com,False
+1011,Quantu  Soft Inc.,New York,Retail,Jane Smith,info@globaltech.com,True
+1012,Innovatech Holdings Inc. . ,Boston,Energy,Alice Johnson,info@globaltech.com,True
+1013,Innovatech Holdings Inc. . ,San Francisco,Finance,John Doe,contact@acme.com,True
+1014,QuantumSoft Inc. . ,New York,Energy,Robert Brown,contact@acme.com,False
+1015,Acme Corporation Ltd..,Los Angeles,Finance,Jane Smith,info@globaltech.com,False
+1016,Innovatech Holdings Inc..,Miami,Technology,Jane Smith,sales@synergy.com,False
+1017,Pinnacle Systems Co. . ,Los Angeles,Technology,Robert Brown,hello@blueocean.com,False
+1018,NextGen Solutions Co. . ,Miami,Energy,Emily Davis,info@globaltech.com,True
+1019,BlueOcean Ventures Inc. . ,Seattle,Retail,Michael Wilson,sales@synergy.com,False
+1020,BlueOcean Ventures Inc.,Los Angeles,Healthcare,John Doe,hello@blueocean.com,True
+1021,QuantumSoft Inc. . ,Chicago,Healthcare,Michael Wilson,hello@blueocean.com,True
+1022,BlueOcean Ventures Inc..,San Francisco,Energy,John Doe,hello@blueocean.com,False
+1023,NextGen Solutions Co..,Seattle,Retail,Michael Wilson,contact@acme.com,True
+1024,NextGen Solutions Co.,Los Angeles,Technology,Michael Wilson,info@globaltech.com,True
+1025,BlueOcean Ventures Inc. . ,Miami,Energy,Robert Brown,support@nextgen.com,False
+1026,Vertex Dynamics Ltd.,Seattle,Finance,John Doe,info@globaltech.com,True
+1027,BlueOcean Ventures Inc. .,Miami,Technology,Jane Smith,sales@synergy.com,False
+1028,NextGen Solutions Co. .,Boston,Healthcare,Emily Davis,contact@acme.com,False
+1029,BlueOcean Ventures Inc..,Boston,Technology,John Doe,contact@acme.com,True
+1030,Acme Corporation Ltd..,Austin,Retail,Michael Wilson,support@nextgen.com,False
+1031,Synergy Group Ltd..,Miami,Education,Jane Smith,info@globaltech.com,True
+1032,Vertex Dynamics Ltd..,New York,Finance,Emily Davis,sales@synergy.com,True
+1033,NextGen Solutions Co. .,New York,Retail,Alice Johnson,sales@synergy.com,False
+1034,NextGen Solutions Co.,Austin,Energy,Robert Brown,hello@blueocean.com,False
+1035,Vertex Dynamics Ltd.,Seattle,Healthcare,Robert Brown,support@nextgen.com,False
+1036,NextGen Solutions Corporation ,Seattle,Energy,Alice Johnson,hello@blueocean.com,True
+1037,NextGen Solutions Co. .,Los Angeles,Education,Jane Smith,contact@acme.com,False
+1038,Global Tech Inc.,Miami,Finance,John Doe,hello@blueocean.com,True
+1039,Global Tech Inc..,Seattle,Healthcare,Emily Davis,hello@blueocean.com,False
+1040,QuantumSoft Inc.,San Francisco,Finance,Michael Wilson,sales@synergy.com,False
+1041,Synergy Group Ltd..,Seattle,Education,Jane Smith,sales@synergy.com,False
+1042,Future   Vision Co..,Boston,Energy,Michael Wilson,hello@blueocean.com,False
+1043,Pinnacle Systems Co. .,San Francisco,Energy,Alice Johnson,contact@acme.com,True
+1044,Global Tech Inc. .,Austin,Healthcare,Jane Smith,sales@synergy.com,False
+1045,Acme Corporation Ltd..,Austin,Retail,Emily Davis,info@globaltech.com,False
+1046,Innovatech    Holdings Inc.,Boston,Healthcare,John Doe,contact@acme.com,True
+1047,FutureVision Co.,Austin,Retail,Emily Davis,hello@blueocean.com,False
+1048,Synergy Group Ltd.,Seattle,Energy,Alice Johnson,support@nextgen.com,True
+1049,Acme Corporation Ltd. .,Austin,Finance,Emily Davis,hello@blueocean.com,False
+1050,Innovatech Holdings Inc..,Miami,Healthcare,Robert Brown,support@nextgen.com,True
+1051,Pinnacle Systems Co. .,Seattle,Finance,Robert Brown,hello@blueocean.com,False
+1052,FutureVision Co. . ,San Francisco,Technology,Emily Davis,info@globaltech.com,True
+1053,BlueOcean Ventures Inc..,Austin,Finance,Robert Brown,contact@acme.com,True
+1054,Pinnacle Systems Co.,San Francisco,Technology,John Doe,contact@acme.com,True
+1055,Vertex   Dynamics Ltd.,Miami,Finance,Michael Wilson,support@nextgen.com,True
+1056,Pinnacle Systems ,Boston,Technology,Michael Wilson,info@globaltech.com,False
+1057,NextGen      Solutions,Boston,Retail,John Doe,hello@blueocean.com,False
+1058,NextGen Solutions Co..,Los Angeles,Technology,Jane Smith,support@nextgen.com,False
+1059,Vertex Dynamics Ltd. . ,Chicago,Education,Alice Johnson,sales@synergy.com,False
+1060,Vertex Dynamics Ltd. .,Chicago,Technology,Alice Johnson,support@nextgen.com,False
+1061,QuantumSoft Inc. . ,New York,Finance,Jane Smith,sales@synergy.com,True
+1062,QuantumSoft Inc..,Miami,Energy,Michael Wilson,hello@blueocean.com,True
+1063,FutureVision Co..,Boston,Education,Jane Smith,contact@acme.com,False
+1064,FutureVision         Co.,Boston,Education,Emily Davis,hello@blueocean.com,False
+1065,BlueOcean Ventures Inc.,Los Angeles,Finance,Robert Brown,sales@synergy.com,True
+1066,Innovatech Holdings Inc. . ,Miami,Healthcare,Emily Davis,contact@acme.com,False
+1067,Innovatech Holdings Inc. . ,Los Angeles,Education,Robert Brown,support@nextgen.com,True
+1068,Pinnacle Systems Corporation.,Seattle,Healthcare,Jane Smith,hello@blueocean.com,True
+1069,QuantumSoft Inc. .,Seattle,Retail,Michael Wilson,contact@acme.com,False
+1070,Innovatech Holdings Inc.,Boston,Retail,Jane Smith,hello@blueocean.com,True
+1071,Vertex Dynamics Ltd.,Seattle,Finance,Robert Brown,info@globaltech.com,True
+1072,Pinnacle Systems Co. . ,New York,Energy,Jane Smith,support@nextgen.com,True
+1073,Synergy Group Ltd. .,Boston,Healthcare,John Doe,contact@acme.com,False
+1074,Global Tech Inc. . ,Boston,Education,John Doe,support@nextgen.com,True
+1075,NextGen Solutions Co..,Miami,Healthcare,Robert Brown,support@nextgen.com,True
+1076,FutureVision Co. .,Chicago,Energy,Emily Davis,hello@blueocean.com,True
+1077,Acme Corporation Ltd..,Seattle,Retail,John Doe,info@globaltech.com,False
+1078,BlueOcean Ventures Inc.,Chicago,Healthcare,John Doe,support@nextgen.com,True
+1079,QuantumSoft Inc. . ,Los Angeles,Finance,Robert Brown,sales@synergy.com,True
+1080,Pinnacle Systems Co. .,San Francisco,Healthcare,Alice Johnson,hello@blueocean.com,True
+1081,Pinnacle Systems Co..,San Francisco,Finance,Robert Brown,hello@blueocean.com,True
+1082,Synergy Group Ltd. .,New York,Retail,Alice Johnson,contact@acme.com,False
+1083,BlueOcean Ventures Inc.,Boston,Technology,Michael Wilson,sales@synergy.com,True
+1084,Acme Corporation Ltd. . ,San Francisco,Retail,Michael Wilson,sales@synergy.com,True
+1085,FutureVision Co..,Los Angeles,Technology,Emily Davis,hello@blueocean.com,False
+1086,BlueOcean Ventures Inc.,Boston,Education,John Doe,support@nextgen.com,False
+1087,Vertex Dynamics Ltd. .,Chicago,Retail,Emily Davis,info@globaltech.com,True
+1088,FutureVision Co. .,New York,Technology,Alice Johnson,sales@synergy.com,True
+1089,FutureVision Co..,Miami,Energy,Robert Brown,contact@acme.com,True
+1090,QuantumSoft Inc..,Miami,Energy,Jane Smith,contact@acme.com,False
+1091,Vertex Dynamics Ltd..,Seattle,Retail,Michael Wilson,hello@blueocean.com,True
+1092,Pinnacle Systems Co..,Miami,Education,Alice Johnson,sales@synergy.com,False
+1093,NextGen Solutions Co.,Los Angeles,Finance,John Doe,info@globaltech.com,False
+1094,BlueOcean Ventures,Miami,Retail,Robert Brown,info@globaltech.com,False
+1095,Innovatech Holdings Inc.,Austin,Technology,John Doe,info@globaltech.com,True
+1096,Quantum  Soft Inc. .,San Francisco,Retail,Jane Smith,support@nextgen.com,True
+1097,Vertex Dynamics Ltd. .,New York,Healthcare,Robert Brown,support@nextgen.com,True
+1098,NextGen Solutions Co. . ,New York,Technology,Emily Davis,hello@blueocean.com,False
+1099,Innovatech Holdings Inc. .,San Francisco,Technology,Jane Smith,sales@synergy.com,False

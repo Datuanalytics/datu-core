@@ -1,0 +1,99 @@
+services:
+  datu:
+    build: .
+    container_name: datu
+    profiles:
+      - server
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    develop:
+      # Create a `watch` configuration to update the app
+      # https://docs.docker.com/compose/file-watch/#compose-watch-versus-bind-mounts
+      watch:
+        # Sync the working directory with the `/app` directory in the container
+        - action: sync
+          path: .
+          target: /app
+          # Exclude the project virtual environment — it could be for a
+          # different platform in the container
+          ignore:
+            - .venv/
+        # Rebuild the image if dependencies change by checking uv.lock
+        - action: rebuild
+          path: ./uv.lock
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:17
+    container_name: datu-postgres
+    profiles:
+      - postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: my_sap_bronze
+    volumes:
+      - ./datu-postgres:/var/lib/postgresql/data 
+      - ./demo/init-scripts:/docker-entrypoint-initdb.d
+      - ./demo/data:/csvs
+    ports:
+      - "5432:5432"
+  
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: datu-sqlserver
+    profiles:
+      - sqlserver
+    environment:
+      MSSQL_SA_PASSWORD: "Password123!"
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: 'Developer'
+    ports:
+      - "1433:1433"
+    volumes:
+      - ./datu-sqlserver:/var/opt/mssql
+      - ./demo/data:/csvs
+
+  loader:
+    image: mcr.microsoft.com/mssql-tools
+    container_name: sqlserver-loader
+    profiles:
+      - sqlserver
+    depends_on:
+      - sqlserver
+    volumes:
+      - ./demo/init-scripts/load_csvs_sqldb.sh:/load_csvs_sqldb.sh
+      - ./demo/data:/csvs
+    entrypoint: ["/bin/bash", "-c"]
+    environment:
+      SQLSERVER_HOST: sqlserver
+      SQLSERVER_USER: sa
+      SQLSERVER_PASS: Password123!
+      SQLSERVER_DB: my_sap_bronze
+    command: >
+      "
+      echo 'Waiting for SQL Server to be ready...';
+      for i in {1..30}; do
+        /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P 'Password123!' -Q 'SELECT 1' && break;
+        echo 'Waiting...'; sleep 2;
+      done;
+
+      echo 'Checking for script...';
+      if [ -f /load_csvs_sqldb.sh ]; then
+        echo 'Script found, making it executable.';
+        chmod +x /load_csvs_sqldb.sh;
+      else
+        echo 'Script not found!';
+        exit 1;
+      fi;
+
+      echo 'Checking CSVs in /csvs:';
+      ls /csvs;
+
+      echo 'Starting CSV load...';
+      bash /load_csvs_sqldb.sh;
+      "
+
