@@ -6,7 +6,7 @@
       - [VSCode setup](#vscode-setup)
     - [Code quality checks](#code-quality-checks)
     - [Code Formatting and Style Guidelines](#code-formatting-and-style-guidelines)
-  - [Contributing via Pull Requests](#contributing-via-pull-requests)
+  - [Contributing via Forking the repository and  Pull Requests](#contributing-via-forking-the-repository-and--pull-requests)
   - [Finding contributions to work on](#finding-contributions-to-work-on)
     - [How to run the application?](#how-to-run-the-application)
           - [Start application](#start-application)
@@ -137,24 +137,31 @@ task install-quality-check # One time activity until there is a change in .pre-c
 task quality-check # check if there are errors and fix them!
 ```
 
-## Contributing via Pull Requests
-Contributions via pull requests are much appreciated. Before sending us a pull request, please ensure that:
+## Contributing via Forking the repository and  Pull Requests
 
-1. You are working against the latest source on the *main* branch.
-2. You check existing open, and recently merged, pull requests to make sure someone else hasn't addressed the problem already.
-3. You open an issue to discuss any significant work - we would hate for your time to be wasted.
+All contributions to Datu need to start on a [fork of the repository](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo). Once you have successfully forked the Datu core repo, clone a local version to your machine:
+
+```sh
+git clone https://github.com/GITHUB-USERNAME/prefect.git
+cd datu-core
+```
+
+Create a branch with an informative name:
+
+```sh
+git checkout -b fix-for-issue-NUM
+```
+
+After committing your changes to this branch, you can then open a pull request from your fork that we will review with you.
 
 To send us a pull request, please:
 
-1. Create a branch.
-2. Modify the source; please focus on the specific change you are contributing. If you also reformat all the code, it will be hard for us to focus on your change.
-3. Format your code using `hatch fmt --formatter`.
-4. Run linting checks with `hatch fmt --linter`.
-5. Ensure local tests pass with `hatch test`.
-6. Commit to your branch using clear commit messages following the [Conventional Commits](https://www.conventionalcommits.org) specification.
-7. Include your change in the changelog using towncrier which is configured using pyproject.toml.
-8. Send us a pull request, answering any default questions in the pull request interface.
-9. Pay attention to any automated CI failures reported in the pull request, and stay involved in the conversation.
+1. Format your code using `hatch fmt --formatter`.
+2. Run linting checks with `hatch fmt --linter`.
+3. Ensure local tests pass with `hatch test`.
+4. Commit to your branch using clear commit messages following the [Conventional Commits](https://www.conventionalcommits.org) specification.
+5. Include your change in the changelog using towncrier which is configured using pyproject.toml.
+6. Pay attention to any automated CI failures reported in the pull request, and stay involved in the conversation.
 
 ## Finding contributions to work on
 Looking at the existing issues is a great way to find something to contribute to.
