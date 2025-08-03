@@ -198,6 +198,13 @@ test = [
 test-integ = [
     "hatch test tests-integ {args}"
 ]
+prepare = [
+    "hatch fmt --linter",
+    "hatch fmt --formatter",
+    "hatch run test-lint",
+    "hatch test --all"
+]
+
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
