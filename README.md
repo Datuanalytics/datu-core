@@ -1,3 +1,24 @@
+<div align="center">
+  <h1>
+    Datu Core
+  </h1>
+
+  <h2>
+    LLM-Driven Data Transformations.
+  </h2>
+
+  <div align="center">
+    <a href="https://github.com/Datuanalytics/datu-core/graphs/commit-activity"><img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/strands-agents/sdk-python"/></a>
+    <a href="https://github.com/Datuanalytics/datu-core/issues"><img alt="GitHub open issues" src="https://img.shields.io/github/issues/strands-agents/sdk-python"/></a>
+    <a href="https://github.com/Datuanalytics/datu-core/pulls"><img alt="GitHub open pull requests" src="https://img.shields.io/github/issues-pr/strands-agents/sdk-python"/></a>
+    <a href="https://github.com/Datuanalytics/datu-core/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache%202.0-blue.svg"/></a>
+  </div>
+  
+  <p>
+    <a href="https://docs.datu.fi/">Documentation</a>
+  </p>
+</div>
+
 - [LLM-Driven Data Transformations](#llm-driven-data-transformations)
 - [Installation](#installation)
 - [Running the application](#running-the-application)
