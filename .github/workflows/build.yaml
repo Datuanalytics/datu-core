@@ -1,0 +1,56 @@
+name: build-wheels
+
+permissions:
+  id-token: write   
+  contents: read  
+
+on:
+  release:
+    types: [published]
+
+env:
+  DEFAULT_PYTHON_VERSION: "3.10"
+
+jobs:
+  build-Wheel:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10","3.11","3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      
+      - name: Install UV
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Install dependencies
+        shell: sh
+        run: |
+          uv sync --all-groups --all-extras
+
+      - name: Build wheel
+        shell: sh
+        run: uv run hatch build
+
+
+      - name: Get wheel file name
+        run: echo wheel_filename=$( ls *.whl ) >> $GITHUB_ENV
+        working-directory: ./dist
+
+      - name: Test that wheel can be installed
+        run: uv run pip install dist/${{ env.wheel_filename }}
+
+      - name: Upload wheel artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheelfile_${{ matrix.python-version }}
+          path: dist/${{ env.wheel_filename }}
+
+ 

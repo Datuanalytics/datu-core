@@ -1,0 +1,26 @@
+
+name: Pull Request
+on: 
+  pull_request:
+    branches: [ main ]
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - 'src/datu/**'
+
+concurrency:
+  group: 'pull-request-${{ github.event.pull_request.number }}'
+  cancel-in-progress: true
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  validate-datu:
+    name: validate-datu
+    uses: ./.github/workflows/validate.yml
+    with:
+      path: '.'
+      name: 'datu'
+    secrets: inherit

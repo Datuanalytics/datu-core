@@ -1,0 +1,16 @@
+name: Format and lint
+description: Format and lint a project in its working directory
+inputs:
+  path:
+    description: Working directory
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Format Python code
+      working-directory: '${{ inputs.path }}'
+      shell: sh
+      run: |
+        uv run hatch run test-lint
+      continue-on-error: false
+

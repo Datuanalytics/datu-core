@@ -1,0 +1,40 @@
+# Add 'frontend' label to any changes within 'docs' folder or any subfolders
+frontend:
+- changed-files:
+  - any-glob-to-any-file: frontend/**
+
+# Add 'backend' label to any file changes within 'src' folder
+backend:
+- changed-files:
+  - any-glob-to-any-file: src/**
+
+# Add 'cdk' label to any file changes within 'demo-host' folder
+cdk:
+- changed-files:
+  - any-glob-to-any-file: 'demo-host/**'
+
+# Add 'github' label to any file changes within '.github' folder
+github:
+- changed-files:
+  - any-glob-to-any-file: '.github/**'
+
+# Add 'Documentation' label to any change to .md files within the entire repository 
+docs:
+- changed-files:
+  - any-glob-to-any-file: '**/*.md'
+
+# Add 'feature' label to any PR where the head branch name starts with `feature` or has a `feature` section in the name
+feature:
+ - head-branch: ['^feature', 'feature','feat','^feat']
+# Add 'bugfix' label to any PR where the head branch name starts with `bugfix` or has a `bugfix` section in the name
+bugfix:
+ - head-branch: ['^bugfix', 'bugfix','fix','^fix']
+ # Add 'enhancement' label to any PR where the head branch name starts with `enhancement` or has a `enhancement` section in the name
+enhancement:
+ - head-branch: ['^enhancement', 'enhancement']
+ # Add 'performance' label to any PR where the head branch name starts with `performance` or has a `performance` section in the name
+performance:
+ - head-branch: ['^performance', 'performance', 'perf', '^perf']
+# Add 'refactor' label to any PR where the head branch name starts with `refactor` or has a `refactor` section in the name
+refactor:
+ - head-branch: ['^refactor', 'refactor']
