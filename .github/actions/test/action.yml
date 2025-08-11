@@ -1,0 +1,44 @@
+name: Test
+description: Test a project in its working directory.
+inputs:
+  test-report-dir:
+    description: Use this override to specify the test report directory.
+    required: false
+    default: test_report
+  path:
+    description: Project path.
+    required: true
+runs:
+  using: composite
+  steps:
+    - id: get-test-coverage-dir
+      name: Get test coverage directory
+      working-directory: '${{ inputs.path }}'
+      shell: sh
+      run: echo "test_coverage_dir=src" >> "$GITHUB_OUTPUT"
+
+    - id: pytest-cov
+      name: Run pytest with coverage
+      working-directory: '${{ inputs.path }}'
+      shell: sh
+      run: |
+        test_report_dir=${{ inputs.test-report-dir }}
+        test_coverage_dir=${{ steps.get-test-coverage-dir.outputs.test_coverage_dir }}
+        pkg_test_dir="tests"
+        coverage_config_path="$GITHUB_WORKSPACE/.coveragerc"
+
+        uv run pytest \
+          --cov-report="xml:$test_report_dir/coverage.xml" \
+          --cov-report="json:$test_report_dir/coverage.json" \
+          --junitxml="$test_report_dir/junit.xml" \
+          --cov="$test_coverage_dir" \
+          --cov-config="$coverage_config_path" \
+          "$pkg_test_dir"
+    
+    - name: pytest coverage comment
+      if: ${{ github.event_name == 'pull_request' && (success() || steps.pytest-cov.conclusion == 'failure') }}
+      uses: MishaKav/pytest-coverage-comment@81882822c5b22af01f91bd3eacb1cefb6ad73dc2
+      with:
+        junitxml-path: ${{ inputs.test-report-dir }}/junit.xml
+        pytest-xml-coverage-path: ${{ inputs.test-report-dir }}/coverage.xml
+        title: Test coverage report datu

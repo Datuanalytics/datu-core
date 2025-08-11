@@ -1,0 +1,31 @@
+name: Fronend Tests
+description: Run frontend tests in a Node.js environment
+inputs:
+  node-version:
+    description: Node.js version to use
+    required: true
+    default: '20'
+runs:
+  using: composite
+  steps:
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: Install dependencies
+      shell: bash
+      run: npm ci
+
+    - name: Run frontend tests
+      shell: bash
+      run: npm test -- --ci --reporters=default --reporters=jest-junit
+      env:
+        CI: true
+      
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: frontend-test-results
+        path: junit.xml

@@ -1,0 +1,64 @@
+
+name: Validate
+on:
+  workflow_call:
+    inputs:
+      path:
+        description: Project path
+        required: true
+        type: string
+      name:
+        description: Project name
+        required: true
+        type: string
+
+jobs:
+  validate:
+    name: Validate
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: my_sap_bronze
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        ports:
+          - 1433:1433
+        env:
+          MSSQL_SA_PASSWORD: "Password123!"
+          ACCEPT_EULA: "Y"
+          MSSQL_PID: 'Developer'
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: ./.github/actions/setup
+        with:
+          name: '${{ inputs.name }}'
+          path: '${{ inputs.path }}'
+
+      - if: ${{ github.event_name == 'pull_request' }}
+        name: Format and Lint
+        uses: ./.github/actions/format-and-lint
+        with:
+          path: '${{ inputs.path }}'
+      
+      - name: Test package
+        uses: ./.github/actions/test
+        with:
+          path: '${{ inputs.path }}'

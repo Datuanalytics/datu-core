@@ -1,0 +1,20 @@
+name: Frontend Tests
+
+on:
+  pull_request:
+    branches: [ main ]
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - 'frontend/**'
+
+jobs:
+  test-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Frontend Tests
+        uses: ./.github/actions/frontend-test
+        with:
+          node-version: '20'
