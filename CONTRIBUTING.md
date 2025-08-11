@@ -239,17 +239,9 @@ task sqlserver-start
 
 ### Frontend Build & Deployment
 
-  Running on-prem model basically works only if you have NVIDIA GPU and CUDA on your computer.
-  For OpenAI usage, set LLM_PROVIDER=openai along with your OPENAI_API_KEY.
-
 **Pre-requisites**
 
-Node.js & npm: Ensure you have Node.js (v14 or later) and npm installed. You can verify installation with:
-
-```bash
-node -v
-npm -v
-```
+Node.js & npm: Ensure you have Node.js (v14 or later) and npm installed.
 **Setup**
 
   Navigate to the frontend folder:
