@@ -3,6 +3,7 @@ name = "datu-core"
 dynamic = ["version"]
 description = "LLM-Driven Data Transformations"
 readme = "README.md"
+license = {text = "Apache-2.0"}
 classifiers = [
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.10",
@@ -81,9 +82,6 @@ docs = [
 [[project.maintainers]]
 name = "Datu"
 email = "maintainers@datu.fi"
-
-[project.license]
-file = "LICENSE"
 
 [project.scripts]
 datu = "datu.main:start_app"
