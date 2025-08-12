@@ -201,7 +201,7 @@ test-integ = [
     "hatch test tests-integ {args}"
 ]
 test-no-service = [
-    "pytest -m {env:PYTEST_MARKER:} {args}"
+    "pytest -m \"not requires_service\" {args}"
 ]
 prepare = [
     "hatch fmt --linter",
@@ -215,7 +215,7 @@ prepare = [
 pythonpath = ["src"]
 markers = [
   "no_env: Mark test without a need for loading environment variables from .env.test file",
-  "requires_services: Require specific services to be running"
+  "requires_service: Require specific services to be running"
 ]
 testpaths = [
     "tests"
