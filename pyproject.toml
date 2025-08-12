@@ -110,6 +110,8 @@ build-backend = "hatchling.build"
 
 [tool.hatch.envs.default]
 installer = "uv"
+type = "virtual"
+path = ".venv"
 
 [tool.hatch.version]
 # Tells Hatch to use your version control system (git) to determine the version.
@@ -198,6 +200,9 @@ test = [
 test-integ = [
     "hatch test tests-integ {args}"
 ]
+test-no-service = [
+    "pytest -m 'not requires_service' {args}"
+]
 prepare = [
     "hatch fmt --linter",
     "hatch fmt --formatter",
@@ -210,6 +215,7 @@ prepare = [
 pythonpath = ["src"]
 markers = [
   "no_env: Mark test without a need for loading environment variables from .env.test file",
+  "requires_services: Require specific services to be running"
 ]
 testpaths = [
     "tests"

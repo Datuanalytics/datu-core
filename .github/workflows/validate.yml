@@ -37,6 +37,41 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       LOG_LEVEL: DEBUG
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      
+      - id: install-uv
+        name: Install uv
+        shell: sh
+        run: |
+          pip install --no-cache-dir uv
+
+      - name: Install dependencies
+        shell: sh
+        run: |
+          uv sync --all-groups
+          uv sync --all-extras
+
+      - name: Run Unit tests
+        id: tests
+        run: uv run hatch run test-no-service
+        continue-on-error: false
+      
+  test-lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
     services:
       postgres:
         image: postgres:17
@@ -59,7 +94,6 @@ jobs:
           MSSQL_SA_PASSWORD: "Password123!"
           ACCEPT_EULA: "Y"
           MSSQL_PID: 'Developer'
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -70,11 +104,10 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
-      
-      - id: install-uv
-        name: Install uv
-        shell: sh
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install uv
         run: |
           pip install --no-cache-dir uv
 
@@ -112,58 +145,10 @@ jobs:
           # optional: for unixODBC development headers
           sudo apt-get install -y unixodbc-dev
 
-      # macOS
-      - name: Install ODBC driver (macOS)
-        if: runner.os == 'macOS'
-        shell: bash
-        run: |
-          brew tap microsoft/mssql-release https://github.com/Microsoft/homebrew-mssql-release
-          brew update
-          ACCEPT_EULA=Y brew install msodbcsql18 mssql-tools18
-          echo 'export PATH="$PATH:/usr/local/bin"' >> ~/.bash_profile
-          source ~/.bash_profile
-
-      # Windows
-      - name: Install ODBC driver (Windows)
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          Invoke-WebRequest -Uri https://go.microsoft.com/fwlink/?linkid=2285634 -OutFile msodbcsql.msi
-          Start-Process msiexec.exe -ArgumentList '/i msodbcsql.msi /quiet /qn /norestart IACCEPTMSODBCSQLLICENSETERMS=YES' -Wait
-          Remove-Item msodbcsql.msi
-
       - name: Run Unit tests
         id: tests
         run: hatch test tests --cover
         continue-on-error: false
-      
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.ref }}
-          persist-credentials: false
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-          cache: 'pip'
-
-      - name: Install uv
-        run: |
-          pip install --no-cache-dir uv
-
-      - name: Install dependencies
-        shell: sh
-        run: |
-          uv sync --all-groups
-          uv sync --all-extras
 
       - name: Run lint
         id: lint
