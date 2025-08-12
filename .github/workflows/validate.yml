@@ -94,9 +94,18 @@ jobs:
         run: |
           brew tap microsoft/mssql-release https://github.com/Microsoft/homebrew-mssql-release
           brew update
-          echo YES | ACCEPT_EULA=Y brew install msodbcsql18 mssql-tools18
+          # Install expect if not present
+          if ! command -v expect &> /dev/null; then
+            brew install expect
+          fi
+          expect -c '
+          spawn brew install msodbcsql18 mssql-tools18
+          expect "Do you accept the license terms? (Enter YES or NO)"
+          send "YES\r"
+          expect eof
+          '
+
           echo 'export PATH="$PATH:/usr/local/bin"' >> ~/.bash_profile
-          source ~/.bash_profile
       # Windows
       - name: Install ODBC driver (Windows)
         if: runner.os == 'Windows'
