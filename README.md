@@ -25,6 +25,7 @@
   - [Premium Features (MCP Server API Key required)](#premium-features-mcp-server-api-key-required)
   - [Documentation](#documentation)
   - [Contributing ❤️](#contributing-️)
+  - [Ready to scale?](#ready-to-scale)
   - [License](#license)
 
 # LLM-Driven Data Transformations
@@ -142,6 +143,10 @@ We welcome contributions! See our [Contributing Guide](CONTRIBUTING.md) for deta
 - Contributing via Pull Requests
 - Code of Conduct
 - Reporting of security issues
+
+## Ready to scale?
+
+If you are looking for Datu SaaS then [Talk to us](hello@datu.fi)
 
 ## License
 

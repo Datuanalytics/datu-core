@@ -4,6 +4,9 @@ dynamic = ["version"]
 description = "LLM-Driven Data Transformations"
 readme = "README.md"
 license = {text = "Apache-2.0"}
+authors = [
+    {name = "Datu", email = "hello@datu.fi"},
+]
 classifiers = [
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.10",
