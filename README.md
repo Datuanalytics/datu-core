@@ -22,7 +22,6 @@
   - [Connect to datasource](#connect-to-datasource)
   - [Configurable parameters](#configurable-parameters)
   - [Features](#features)
-  - [Premium Features (MCP Server API Key required)](#premium-features-mcp-server-api-key-required)
   - [Documentation](#documentation)
   - [Contributing ❤️](#contributing-️)
   - [Ready to scale?](#ready-to-scale)
@@ -118,15 +117,6 @@ Please checkout datu [documentation](https://docs.datu.fi)
 
 - **Dashboards:**
   Build dashboards with multiple KPIs to share insights with stakeholders. 
-
-
-## Premium Features (MCP Server API Key required) 
-
-- **Root Cause Analysis:**
-  Analyze key KPIs, uncover root causes and identify the factors with the greatest impact on KPIs just like a data scientist. 
-
-- **Anomaly Detection:**  
-  Automatically detect data quality issues using rules, flag anomalies, and resolve them to keep your data clean and reliable for decision-making. 
 
 
 ## Documentation
