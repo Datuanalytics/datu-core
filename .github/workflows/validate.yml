@@ -61,6 +61,50 @@ jobs:
         run: |
           uv sync --all-groups
           uv sync --all-extras
+      
+      - name: Install ODBC driver
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          if ! [[ "20.04 22.04 24.04 24.10" == *"$(grep VERSION_ID /etc/os-release | cut -d '"' -f 2)"* ]];
+          then
+              echo "Ubuntu $(grep VERSION_ID /etc/os-release | cut -d '"' -f 2) is not currently supported.";
+              exit;
+          fi
+          # Download the package to configure the Microsoft repo
+          curl -sSL -O https://packages.microsoft.com/config/ubuntu/$(grep VERSION_ID /etc/os-release | cut -d '"' -f 2)/packages-microsoft-prod.deb
+          # Install the package
+          sudo apt-get update
+          sudo apt-get install -y ./packages-microsoft-prod.deb || true
+          rm packages-microsoft-prod.deb
+          # Install the driver
+          sudo apt-get update
+          sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18
+          # optional: for bcp and sqlcmd
+          sudo ACCEPT_EULA=Y apt-get install -y mssql-tools18
+          echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc
+          source ~/.bashrc
+          # optional: for unixODBC development headers
+          sudo apt-get install -y unixodbc-dev
+      # macOS
+      - name: Install ODBC driver (macOS)
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          brew tap microsoft/mssql-release https://github.com/Microsoft/homebrew-mssql-release
+          brew update
+          ACCEPT_EULA=Y brew install msodbcsql18 mssql-tools18
+          echo 'export PATH="$PATH:/usr/local/bin"' >> ~/.bash_profile
+          source ~/.bash_profile
+      # Windows
+      - name: Install ODBC driver (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri https://go.microsoft.com/fwlink/?linkid=2285634 -OutFile msodbcsql.msi
+          Start-Process msiexec.exe -ArgumentList '/i msodbcsql.msi /quiet /qn /norestart IACCEPTMSODBCSQLLICENSETERMS=YES' -Wait
+          Remove-Item msodbcsql.msi
 
       - name: Run Unit tests
         id: tests
@@ -147,7 +191,7 @@ jobs:
 
       - name: Run Unit tests
         id: tests
-        run: hatch test tests --cover
+        run: uv run hatch test tests --cover
         continue-on-error: false
 
       - name: Run lint
