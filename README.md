@@ -106,8 +106,6 @@ Please checkout datu [documentation](https://docs.datu.fi)
 - **CSV Upload:**
   Upload data as CSV files, in addition to or instead of connecting to a database. 
 
-- **Document Upload:**   
-  Provide documents to give the tool additional context. 
 
 - **Visualizations:** 
   Create bar, line, area, scatter, pie, or KPI visualizations to explore your data. 
