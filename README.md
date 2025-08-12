@@ -41,7 +41,7 @@ Datu is an AI-powered analyst agent that lets you model, visualize, analyze, and
 
 # Installation
 
-Ensure you have installed Python 3.10+.
+Ensure you have installed Python 3.11+.
 
 ```sh
 # Create and activate virtual environment
