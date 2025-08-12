@@ -3,19 +3,40 @@ name: Validate
 on:
   workflow_call:
     inputs:
-      path:
-        description: Project path
-        required: true
-        type: string
-      name:
-        description: Project name
+      ref:
         required: true
         type: string
 
 jobs:
   validate:
-    name: Validate
-    runs-on: ubuntu-latest
+    name: Validate ${{ matrix.python-version }} - ${{ matrix.os-name }}
+    permissions:
+      contents: read
+    strategy:
+      matrix:
+       include:
+        # Linux
+        - os: ubuntu-latest
+          os-name: 'linux'
+          python-version: "3.11"
+        - os: ubuntu-latest
+          os-name: 'linux'
+          python-version: "3.12"
+        # Windows
+        - os: windows-latest
+          os-name: 'windows'
+          python-version: "3.11"
+        - os: windows-latest
+          os-name: 'windows'
+          python-version: "3.12"
+        # MacOS
+        - os: macos-latest
+          os-name: 'macOS'
+          python-version: "3.12"
+      fail-fast: true
+    runs-on: ${{ matrix.os }}
+    env:
+      LOG_LEVEL: DEBUG
     services:
       postgres:
         image: postgres:17
@@ -38,27 +59,113 @@ jobs:
           MSSQL_SA_PASSWORD: "Password123!"
           ACCEPT_EULA: "Y"
           MSSQL_PID: 'Developer'
-    permissions:
-      id-token: write
-      contents: read
-      pull-requests: write
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+          persist-credentials: false
 
       - name: Set up Python
-        uses: ./.github/actions/setup
+        uses: actions/setup-python@v5
         with:
-          name: '${{ inputs.name }}'
-          path: '${{ inputs.path }}'
-
-      - if: ${{ github.event_name == 'pull_request' }}
-        name: Format and Lint
-        uses: ./.github/actions/format-and-lint
-        with:
-          path: '${{ inputs.path }}'
+          python-version: ${{ matrix.python-version }}
       
-      - name: Test package
-        uses: ./.github/actions/test
+      - id: install-uv
+        name: Install uv
+        shell: sh
+        run: |
+          pip install --no-cache-dir uv
+
+      - name: Install dependencies
+        shell: sh
+        run: |
+          uv sync --all-groups
+          uv sync --all-extras
+      
+      - name: Install ODBC driver
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          if ! [[ "20.04 22.04 24.04 24.10" == *"$(grep VERSION_ID /etc/os-release | cut -d '"' -f 2)"* ]];
+          then
+              echo "Ubuntu $(grep VERSION_ID /etc/os-release | cut -d '"' -f 2) is not currently supported.";
+              exit;
+          fi
+
+          # Download the package to configure the Microsoft repo
+          curl -sSL -O https://packages.microsoft.com/config/ubuntu/$(grep VERSION_ID /etc/os-release | cut -d '"' -f 2)/packages-microsoft-prod.deb
+          # Install the package
+          sudo apt-get update
+          sudo apt-get install -y ./packages-microsoft-prod.deb || true
+          rm packages-microsoft-prod.deb
+
+          # Install the driver
+          sudo apt-get update
+          sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18
+          # optional: for bcp and sqlcmd
+          sudo ACCEPT_EULA=Y apt-get install -y mssql-tools18
+          echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc
+          source ~/.bashrc
+          # optional: for unixODBC development headers
+          sudo apt-get install -y unixodbc-dev
+
+      # macOS
+      - name: Install ODBC driver (macOS)
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          brew tap microsoft/mssql-release https://github.com/Microsoft/homebrew-mssql-release
+          brew update
+          ACCEPT_EULA=Y brew install msodbcsql18 mssql-tools18
+          echo 'export PATH="$PATH:/usr/local/bin"' >> ~/.bash_profile
+          source ~/.bash_profile
+
+      # Windows
+      - name: Install ODBC driver (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri https://go.microsoft.com/fwlink/?linkid=2285634 -OutFile msodbcsql.msi
+          Start-Process msiexec.exe -ArgumentList '/i msodbcsql.msi /quiet /qn /norestart IACCEPTMSODBCSQLLICENSETERMS=YES' -Wait
+          Remove-Item msodbcsql.msi
+
+      - name: Run Unit tests
+        id: tests
+        run: hatch test tests --cover
+        continue-on-error: false
+      
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
-          path: '${{ inputs.path }}'
+          ref: ${{ inputs.ref }}
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install uv
+        run: |
+          pip install --no-cache-dir uv
+
+      - name: Install dependencies
+        shell: sh
+        run: |
+          uv sync --all-groups
+          uv sync --all-extras
+
+      - name: Run lint
+        id: lint
+        run: uv run hatch run test-lint
+        continue-on-error: false
