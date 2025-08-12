@@ -4,8 +4,6 @@ on:
   pull_request:
     branches: [ main ]
     types: [opened, synchronize, reopened, ready_for_review]
-    # paths:
-    #   - 'src/datu/**'
 
 concurrency:
   group: 'pull-request-${{ github.event.pull_request.number }}'
