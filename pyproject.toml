@@ -83,7 +83,7 @@ docs = [
 
 [[project.maintainers]]
 name = "Datu"
-email = "maintainers@datu.fi"
+email = "hello@datu.fi"
 
 [project.scripts]
 datu = "datu.main:start_app"
@@ -123,7 +123,7 @@ dependencies = [
   "ruff",
   "bandit",
   "pylint",
-  "datu @ {root:uri}"
+  "datu-core @ {root:uri}"
 ]
 
 [tool.hatch.envs.hatch-static-analysis.scripts]
