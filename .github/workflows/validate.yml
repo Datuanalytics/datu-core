@@ -108,7 +108,7 @@ jobs:
 
       - name: Run Unit tests
         id: tests
-        run: uv run hatch run test-no-service
+        run: PYTEST_MARKER="not requires_service" uv run hatch test-no-service
         continue-on-error: false
       
   test-lint:

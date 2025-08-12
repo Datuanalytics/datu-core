@@ -201,7 +201,7 @@ test-integ = [
     "hatch test tests-integ {args}"
 ]
 test-no-service = [
-    "pytest -m 'not requires_service' {args}"
+    "pytest -m {env:PYTEST_MARKER:} {args}"
 ]
 prepare = [
     "hatch fmt --linter",
