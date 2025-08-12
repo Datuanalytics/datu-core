@@ -94,7 +94,7 @@ jobs:
         run: |
           brew tap microsoft/mssql-release https://github.com/Microsoft/homebrew-mssql-release
           brew update
-          ACCEPT_EULA=Y brew install msodbcsql18 mssql-tools18
+          echo YES | ACCEPT_EULA=Y brew install msodbcsql18 mssql-tools18
           echo 'export PATH="$PATH:/usr/local/bin"' >> ~/.bash_profile
           source ~/.bash_profile
       # Windows
@@ -106,7 +106,7 @@ jobs:
           Start-Process msiexec.exe -ArgumentList '/i msodbcsql.msi /quiet /qn /norestart IACCEPTMSODBCSQLLICENSETERMS=YES' -Wait
           Remove-Item msodbcsql.msi
 
-      - name: Run Unit tests on Linux and MacOS
+      - name: Run Unit tests
         env:
           PYTEST_MARKER: "not requires_service"
         id: tests
