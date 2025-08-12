@@ -6,9 +6,11 @@ and retrieving data quality metrics.
 
 from unittest.mock import patch
 
+import pytest
 from fastapi.testclient import TestClient
 
 
+@pytest.mark.requires_service
 def test_preview_transformation(client: TestClient) -> None:
     """Test the /preview/ endpoint for SQL transformation preview.
     Verifies that the endpoint returns a preview of the SQL transformation.
@@ -28,6 +30,7 @@ def test_preview_transformation(client: TestClient) -> None:
     assert response.json() == {"preview": mock_preview_data}
 
 
+@pytest.mark.requires_service
 def test_create_view_endpoint(client: TestClient) -> None:
     """Test the /create_view/ endpoint for creating views.
     Verifies that the endpoint creates a view in the Gold layer.
@@ -47,6 +50,7 @@ def test_create_view_endpoint(client: TestClient) -> None:
     assert response.json() == mock_result
 
 
+@pytest.mark.requires_service
 def test_download_transformation(client: TestClient) -> None:
     """Test the /download/ endpoint for downloading data.
     Verifies that the endpoint returns data for CSV export.
@@ -66,6 +70,7 @@ def test_download_transformation(client: TestClient) -> None:
     assert response.json() == {"data": mock_data}
 
 
+@pytest.mark.requires_service
 def test_execute_transformation(client: TestClient) -> None:
     """Test the /execute/ endpoint for executing SQL transformations.
     Verifies that the endpoint executes the SQL transformation and returns the result.
@@ -87,6 +92,7 @@ def test_execute_transformation(client: TestClient) -> None:
     assert response.json() == mock_result
 
 
+@pytest.mark.requires_service
 def test_get_data_quality(client: TestClient) -> None:
     """Test the /data_quality/ endpoint for retrieving data quality metrics.
     Verifies that the endpoint returns dummy data quality metrics.

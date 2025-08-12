@@ -3,14 +3,17 @@ name = "datu-core"
 dynamic = ["version"]
 description = "LLM-Driven Data Transformations"
 readme = "README.md"
+license = {text = "Apache-2.0"}
+authors = [
+    {name = "Datu", email = "hello@datu.fi"},
+]
 classifiers = [
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Topic :: Software Development :: Libraries :: Python Modules",
   ]
-requires-python = ">=3.10,<3.13"
+requires-python = ">=3.11,<3.13"
 
 dependencies = [
     "fastapi>=0.115.11",
@@ -80,10 +83,7 @@ docs = [
 
 [[project.maintainers]]
 name = "Datu"
-email = "maintainers@datu.fi"
-
-[project.license]
-file = "LICENSE"
+email = "hello@datu.fi"
 
 [project.scripts]
 datu = "datu.main:start_app"
@@ -110,6 +110,8 @@ build-backend = "hatchling.build"
 
 [tool.hatch.envs.default]
 installer = "uv"
+type = "virtual"
+path = ".venv"
 
 [tool.hatch.version]
 # Tells Hatch to use your version control system (git) to determine the version.
@@ -123,7 +125,7 @@ dependencies = [
   "ruff",
   "bandit",
   "pylint",
-  "datu @ {root:uri}"
+  "datu-core @ {root:uri}"
 ]
 
 [tool.hatch.envs.hatch-static-analysis.scripts]
@@ -161,7 +163,7 @@ features = ["dev", "postgres", "sqldb", "docs"]
 
 
 [[tool.hatch.envs.hatch-test.matrix]]
-python = ["3.12", "3.11", "3.10"]
+python = ["3.12", "3.11"]
 
 
 [tool.hatch.envs.hatch-test.scripts]
@@ -198,6 +200,9 @@ test = [
 test-integ = [
     "hatch test tests-integ {args}"
 ]
+test-no-service = [
+    "pytest -m \"not requires_service\" {args}"
+]
 prepare = [
     "hatch fmt --linter",
     "hatch fmt --formatter",
@@ -210,6 +215,7 @@ prepare = [
 pythonpath = ["src"]
 markers = [
   "no_env: Mark test without a need for loading environment variables from .env.test file",
+  "requires_service: Require specific services to be running"
 ]
 testpaths = [
     "tests"
@@ -237,8 +243,8 @@ en-core-web-lg = { url = "https://github.com/explosion/spacy-models/releases/dow
 [tool.ruff]
 line-length = 120
 indent-width = 4
-# use python 3.10 as the minium target version
-target-version = "py310"
+# use python 3.11 as the minium target version
+target-version = "py311"
 
 extend-include = ["*.ipynb"]
 include = ["src/**/*.py", "tests/**/*.py"]
@@ -272,7 +278,7 @@ convention = "google"
 "!src/**/*.py" = ["D"] # Ignore docstring checks in non-package files
 
 [tool.mypy]
-python_version = "3.10"
+python_version = "3.11"
 # warn_return_any = true
 # warn_unused_configs = true
 # disallow_untyped_calls = true
@@ -302,12 +308,12 @@ ignore_missing_imports = true
 [tool.towncrier]
 directory = "changelog.d"
 filename = "CHANGELOG.md"
-package = "datu"
+package = "datu-core"
 package_dir = "src"
 start_string = "<!-- towncrier release notes start -->\n"
 underlines = ["", "", ""]
-title_format = "## [{version}](https://github.com/Datuanalytics/datu-analytics/tree/{version}) - {project_date}"
-issue_format = "[#{issue}](https://github.com/Datuanalytics/datu-analytics/issues/{issue})"
+title_format = "## [{version}](https://github.com/Datuanalytics/datu-core/tree/{version}) - {project_date}"
+issue_format = "[#{issue}](https://github.com/Datuanalytics/datu-core/issues/{issue})"
 
 [[tool.towncrier.type]]
 directory = "security"
