@@ -106,13 +106,15 @@ jobs:
           Start-Process msiexec.exe -ArgumentList '/i msodbcsql.msi /quiet /qn /norestart IACCEPTMSODBCSQLLICENSETERMS=YES' -Wait
           Remove-Item msodbcsql.msi
 
-      - name: Run Unit tests
+      - name: Run Unit tests on Linux and MacOS
+        env:
+          PYTEST_MARKER: "not requires_service"
         id: tests
-        run: PYTEST_MARKER="not requires_service" uv run hatch run test-no-service
+        run: uv run hatch run test-no-service
         continue-on-error: false
       
   test-lint:
-    name: Lint
+    name: Test and Lint
     runs-on: ubuntu-latest
     permissions:
       contents: read
