@@ -1,3 +1,18 @@
+/**
+ * RightPanelTabs
+ * Renders the right panel with chart dashboard and manages data fetching for selected queries.
+ *
+ * Props:
+ *   queries (array): List of query objects
+ *   selectedQueryIndices (array): Indices of selected queries
+ *   setSelectedQueryIndices (function): Setter for selectedQueryIndices
+ *   previewDataMap (object): Map of query id to preview data
+ *   setPreviewDataMap (function): Setter for previewDataMap
+ *   qualityMap (object): Map of query id to quality info
+ *   onSQLUpdate (function): Callback to update SQL
+ *   isEditMode (boolean): Whether dashboard is in edit mode
+ *   setIsEditMode (function): Setter for isEditMode
+ */
 // src/components/RightPanelTabs.js
 import React from 'react';
 import { Box } from '@mui/material';

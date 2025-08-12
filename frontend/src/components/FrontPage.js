@@ -1,20 +1,27 @@
-// src/components/FrontPage.jsx
+/**
+ * FrontPage
+ * Landing page for the AI Analyst app, provides sample questions and input for user queries.
+ *
+ * Props:
+ *   onStart (function): Callback to start analysis with a user question
+ */
 import React, { useState } from 'react';
 import { Box, Container, Typography, Card, CardContent, InputBase, IconButton } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
-import { Message } from '@mui/icons-material'; // Use appropriate icons
+import { Message } from '@mui/icons-material';
+
 
 export default function FrontPage({ onStart }) {
-  // Local state for the input value.
+  // State for the input value
   const [inputValue, setInputValue] = useState('');
-  
+
   const sampleQuestions = [
     "Generate a report about our company's financial situation",
     "Show me sales performance by product category for different months",
     "What were our top 5 performing products?"
   ];
 
-  // When user submits (via form submission) we call onStart with the input value.
+  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
     if (inputValue.trim()) {
@@ -22,15 +29,13 @@ export default function FrontPage({ onStart }) {
     }
   };
 
-  // When a sample question card is clicked, pass that text to onStart.
+  // Handle sample question click
   const handleSampleClick = (question) => {
     onStart(question);
   };
 
   return (
     <Box>
-      {/* The unified header is rendered globally (see App.js) so we remove any duplicate header here */}
-      {/* Hero Section */}
       <Container maxWidth="md" sx={{ textAlign: 'center', mt: 8, mb: 8 }}>
         <Typography variant="h3" sx={{ fontWeight: 'bold', mb: 2 }}>
           Meet AI Analyst, your data assistant
@@ -46,7 +51,7 @@ export default function FrontPage({ onStart }) {
         </Typography>
         <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, mb: 6 }}>
           {sampleQuestions.map((question, idx) => (
-            <Card key={idx} sx={{ textAlign: 'left', cursor: 'pointer' }} onClick={() => handleSampleClick(question)}>
+            <Card key={idx} sx={{ textAlign: 'left', cursor: 'pointer' }} onClick={() => handleSampleClick(question)} aria-label={`Sample question: ${question}`} tabIndex={0} onKeyPress={e => { if (e.key === 'Enter') handleSampleClick(question); }}>
               <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Message sx={{ fontSize: 20, color: '#5C7285' }} />
                 <Typography variant="body2">{question}</Typography>
@@ -72,10 +77,11 @@ export default function FrontPage({ onStart }) {
             sx={{ flex: 1, ml: 1 }}
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
+            inputProps={{ 'aria-label': 'Ask a question about your data' }}
           />
           <IconButton
             onClick={handleSubmit}
-            aria-label="Send"
+            aria-label="Send question"
             sx={{
               bgcolor: 'primary.main',
               color: '#fff',

@@ -1,4 +1,13 @@
-// src/components/SqlModal.js
+/**
+ * SqlModal
+ * Modal dialog for editing SQL code with Monaco editor and save/cancel actions.
+ *
+ * Props:
+ *   open (boolean): Whether the modal is open
+ *   handleClose (function): Function to close the modal
+ *   initialSQL (string): Initial SQL code to display
+ *   onSQLUpdate (function): Callback to update SQL code
+ */
 import React, { useState } from 'react';
 import { Modal, Box, Typography, Button } from '@mui/material';
 import MonacoEditor from 'react-monaco-editor';
@@ -24,9 +33,9 @@ function SqlModal({ open, handleClose, initialSQL, onSQLUpdate }) {
   };
 
   return (
-    <Modal open={open} onClose={handleClose}>
+    <Modal open={open} onClose={handleClose} aria-labelledby="sql-modal-title" aria-describedby="sql-modal-description">
       <Box sx={modalStyle}>
-        <Typography variant="h6" sx={{ mb: 2 }}>
+        <Typography id="sql-modal-title" variant="h6" sx={{ mb: 2 }}>
           Edit SQL
         </Typography>
         <MonacoEditor
@@ -39,10 +48,10 @@ function SqlModal({ open, handleClose, initialSQL, onSQLUpdate }) {
           options={{ automaticLayout: true }}
         />
         <Box sx={{ textAlign: 'right', mt: 2 }}>
-          <Button variant="outlined" onClick={handleClose} sx={{ mr: 2 }}>
+          <Button variant="outlined" onClick={handleClose} sx={{ mr: 2 }} aria-label="Cancel editing SQL">
             Cancel
           </Button>
-          <Button variant="contained" onClick={handleSave}>
+          <Button variant="contained" onClick={handleSave} aria-label="Save SQL changes">
             Save
           </Button>
         </Box>

@@ -1,4 +1,13 @@
-// src/components/AddChartDialog.js
+/**
+ * AddChartDialog
+ * Dialog for creating a new chart/visualization. Lets user select chart type, data source, axes, and measure(s).
+ *
+ * Props:
+ *   open (bool): Whether the dialog is open
+ *   onClose (func): Callback to close dialog
+ *   onAddChart (func): Callback to add chart, receives chart config
+ *   dataSources (object): Map of data source names to data arrays
+ */
 import React, { useState } from 'react';
 import {
   Dialog,
@@ -18,18 +27,18 @@ import {
   ListItemText,
 } from '@mui/material';
 import BarChartIcon from '@mui/icons-material/BarChart';
-import ShowChartIcon from '@mui/icons-material/ShowChart'; // line
-import TimelineIcon from '@mui/icons-material/Timeline'; // area
+import ShowChartIcon from '@mui/icons-material/ShowChart';
+import TimelineIcon from '@mui/icons-material/Timeline';
 import PieChartIcon from '@mui/icons-material/PieChart';
-import ActivityIcon from '@mui/icons-material/AutoAwesomeMotion'; // or similar for KPI
+import ActivityIcon from '@mui/icons-material/AutoAwesomeMotion';
 
 function AddChartDialog({
   open,
   onClose,
   onAddChart,
-  dataSources, // e.g. Object with data arrays
-  queries,     // e.g. for advanced referencing
+  dataSources,
 }) {
+  // State for form fields
   const [title, setTitle] = useState('');
   const [chartType, setChartType] = useState('');
   const [dataSource, setDataSource] = useState('');
@@ -37,8 +46,8 @@ function AddChartDialog({
   const [yAxes, setYAxes] = useState([]); // multi-select
   const [errorMsg, setErrorMsg] = useState('');
 
+  // Reset all fields and close dialog
   const handleClose = () => {
-    // Reset
     setTitle('');
     setChartType('');
     setDataSource('');
@@ -48,9 +57,8 @@ function AddChartDialog({
     onClose();
   };
 
-  // Attempt to create a new chart
+  // Validate and submit chart config
   const handleAddChart = () => {
-    // Basic validation
     if (!title.trim() || !chartType || !dataSource) {
       setErrorMsg('Please fill all required fields');
       return;
@@ -63,25 +71,23 @@ function AddChartDialog({
       setErrorMsg('Please select at least one Y axis/measure');
       return;
     }
-
-    // Build the new chart config
     onAddChart({
       id: `chart-${Date.now()}`,
       title,
       chartType,
       dataSource,
       xKey: xAxis,
-      yKeys: yAxes, // multi-series
+      yKeys: yAxes,
     });
     handleClose();
   };
 
-  // Build the array of columns for the selected data source
+  // Get columns for selected data source
   const columns = dataSource && dataSources[dataSource] && dataSources[dataSource].length > 0
     ? Object.keys(dataSources[dataSource][0])
     : [];
 
-  // For multi-select Y axis
+  // Handle Y axis selection (multi-select)
   const handleYAxesChange = (e) => {
     const value = e.target.value;
     setYAxes(typeof value === 'string' ? value.split(',') : value);
@@ -98,6 +104,7 @@ function AddChartDialog({
             fullWidth
             value={title}
             onChange={(e) => setTitle(e.target.value)}
+            inputProps={{ 'aria-label': 'Chart title' }}
           />
 
           <Typography variant="body2" sx={{ fontWeight: 600 }}>
@@ -107,30 +114,35 @@ function AddChartDialog({
             <IconButton
               color={chartType === 'bar' ? 'primary' : 'default'}
               onClick={() => setChartType('bar')}
+              aria-label="Bar chart"
             >
               <BarChartIcon />
             </IconButton>
             <IconButton
               color={chartType === 'line' ? 'primary' : 'default'}
               onClick={() => setChartType('line')}
+              aria-label="Line chart"
             >
               <ShowChartIcon />
             </IconButton>
             <IconButton
               color={chartType === 'area' ? 'primary' : 'default'}
               onClick={() => setChartType('area')}
+              aria-label="Area chart"
             >
               <TimelineIcon />
             </IconButton>
             <IconButton
               color={chartType === 'pie' ? 'primary' : 'default'}
               onClick={() => setChartType('pie')}
+              aria-label="Pie chart"
             >
               <PieChartIcon />
             </IconButton>
             <IconButton
               color={chartType === 'kpi' ? 'primary' : 'default'}
               onClick={() => setChartType('kpi')}
+              aria-label="KPI"
             >
               <ActivityIcon />
             </IconButton>
@@ -142,6 +154,7 @@ function AddChartDialog({
               value={dataSource}
               label="Data Source"
               onChange={(e) => setDataSource(e.target.value)}
+              inputProps={{ 'aria-label': 'Data source' }}
             >
               {Object.keys(dataSources).map((ds) => (
                 <MenuItem key={ds} value={ds}>
@@ -158,6 +171,7 @@ function AddChartDialog({
                 value={xAxis}
                 label="X Axis"
                 onChange={(e) => setXAxis(e.target.value)}
+                inputProps={{ 'aria-label': 'X axis' }}
               >
                 {columns.map((col) => (
                   <MenuItem key={col} value={col}>
@@ -180,6 +194,7 @@ function AddChartDialog({
               label="Y Axis"
               onChange={handleYAxesChange}
               renderValue={(selected) => (Array.isArray(selected) ? selected.join(', ') : selected)}
+              inputProps={{ 'aria-label': 'Y axis' }}
             >
               {columns.map((col) => (
                 <MenuItem key={col} value={col}>

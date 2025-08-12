@@ -1,4 +1,16 @@
-// src/components/VisualizationDashboard.jsx
+/**
+ * VisualizationDashboard
+ * Responsive dashboard for displaying and arranging chart tiles using react-grid-layout.
+ *
+ * Props:
+ *   charts (array): List of chart objects to display
+ *   onRemoveChart (function): Callback to remove a chart
+ *   onTitleChange (function): Callback to change chart title
+ *   onSQLUpdate (function): Callback to update chart SQL
+ *   previewDataMap (object): Map of chart id to preview data
+ *   qualityMap (object): Map of chart id to quality info
+ *   isEditMode (boolean): Whether dashboard is in edit mode
+ */
 import React, { useState, useLayoutEffect, useRef, useEffect } from 'react';
 import { Box } from '@mui/material';
 import { Responsive, WidthProvider } from 'react-grid-layout';
@@ -100,7 +112,7 @@ function VisualizationDashboard({ charts, onRemoveChart, onTitleChange, onSQLUpd
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newLayouts));
     }
     // else: do not update layout, preserve user changes
-  }, [charts]);
+  }, [charts, layouts.lg]);
 
   // Style for grid container – ensures the grid does not exceed container height.
   const gridContainerStyle = {
@@ -126,7 +138,7 @@ function VisualizationDashboard({ charts, onRemoveChart, onTitleChange, onSQLUpd
         overflowY: 'auto',
       }}
     >
-      {/* Design Mode toggle removed, now controlled from header */}
+      {/* Dashboard grid layout for charts */}
       <ErrorBoundary>
         <div style={gridContainerStyle}>
           <ResponsiveGridLayout
