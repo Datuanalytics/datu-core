@@ -5,9 +5,11 @@ including schema introspection and error handling.
 
 from unittest.mock import patch
 
+import pytest
 from fastapi.testclient import TestClient
 
 
+@pytest.mark.requires_service
 def test_get_schema_success(client: TestClient) -> None:
     """Test the /schema endpoint for successful schema introspection.
     Verifies that the endpoint returns a list of SchemaGlossary objects.
@@ -52,6 +54,7 @@ def test_get_schema_success(client: TestClient) -> None:
     assert response.json() == mock_schema
 
 
+@pytest.mark.requires_service
 def test_get_schema_not_found(client: TestClient) -> None:
     """Test the /schema endpoint when no schema is found.
     Verifies that the endpoint returns a 404 status code with an appropriate error message.

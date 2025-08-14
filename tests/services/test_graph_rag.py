@@ -96,6 +96,7 @@ def test_graph_contains_expected_edges():
     )
 
 
+@pytest.mark.requires_service
 def test_schema_rag_run_query_returns_filtered_schema_dict():
     """Test SchemaRAG end-to-end run_query method returns filtered schema."""
     schema = SchemaTestFixtures.sample_schema()

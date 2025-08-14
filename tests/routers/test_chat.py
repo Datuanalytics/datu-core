@@ -6,6 +6,7 @@ including SQL extraction, validation, and response generation.
 # pylint: disable=import-outside-toplevel
 from unittest.mock import MagicMock, patch
 
+import pytest
 from fastapi.testclient import TestClient
 
 
@@ -106,6 +107,7 @@ def test_validate_and_fix_sql_failure_message() -> None:
     assert "```sql\n-- FAILED TO RUN\nSELECT * FROM invalid_table;\n```" in fixed_response
 
 
+@pytest.mark.requires_service
 def test_chat_with_llm(client: TestClient) -> None:
     """Test the chat_with_llm endpoint for generating SQL queries.
     Verifies that the endpoint processes requests and returns valid responses.
@@ -136,6 +138,7 @@ def test_chat_with_llm(client: TestClient) -> None:
     assert response.json()["queries"][0]["title"] == "Get Users"
 
 
+@pytest.mark.requires_service
 def test_chat_with_llm_return_format(client: TestClient) -> None:
     """Test the chat_with_llm endpoint to ensure the return format is correct.
     Verifies that the response contains the expected keys and structure.

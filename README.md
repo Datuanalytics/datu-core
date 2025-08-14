@@ -24,15 +24,24 @@
   - [Features](#features)
   - [Documentation](#documentation)
   - [Contributing ❤️](#contributing-️)
+  - [Ready to scale?](#ready-to-scale)
   - [License](#license)
 
 # LLM-Driven Data Transformations
 
-This application is a FastAPI-based system that leverages a Large Language Model (LLM) to generate SQL transformation queries from natural language business requirements. Its primary purpose is to transform data from the Bronze layer into a Gold layer representation by creating persistent database views. The application now supports both cloud-based (OpenAI) and on-premises LLMs for SQL generation.
+Datu is an AI-powered analyst agent that lets you model, visualize, analyze, and act on your data in minutes, all in plain English without technical expertise required. You can connect Datu Analyst to a variety of tools or MCP servers to perform tasks typically done by data analysts or data scientists. AI Analyst can do:  
+
+- Connect to your data platform  
+
+- Identify data quality issues  
+
+- Identify and model data based on user request  
+
+- Visualise and analyse data to understand "why" behind KPIs  
 
 # Installation
 
-Ensure you have installed Python 3.10+.
+Ensure you have installed Python 3.11+.
 
 ```sh
 # Create and activate virtual environment
@@ -77,10 +86,10 @@ Please checkout datu [documentation](https://docs.datu.fi)
 ## Features
 
 - **Dynamic Schema Discovery & Caching:**  
-  Automatically introspects the target database schema, caches the discovered metadata (with an optional business glossary), and refreshes the cache if older than a configurable threshold (default: 2 days).
+  Automatically introspects the target database schema and caches the discovered metadata.
 
 - **LLM Integration for SQL Generation:**  
-  Uses OpenAI's API (e.g., GPT-4o-mini) to generate SQL queries that transform raw (Bronze) data into a Gold layer format. The system prompt includes a concise summary of the schema to help the LLM generate valid queries.
+  Uses OpenAI's API (e.g., GPT-4o-mini) to generate SQL queries that transform raw (Silver) data into a Gold layer format. The system prompt includes a concise summary of the schema to help the LLM generate valid queries.
 
 - **Transformation Preview:**  
   The generated SQL is previewed by executing a sample query (with a LIMIT) and displaying the result in a formatted HTML table.
@@ -93,6 +102,19 @@ Please checkout datu [documentation](https://docs.datu.fi)
 
 - **User-Friendly Chat Interface:**  
   The frontend features a ChatGPT-like interface with persistent conversation state, syntax highlighting for code blocks, and copy-to-clipboard functionality.
+
+- **CSV Upload:**
+  Upload data as CSV files, in addition to or instead of connecting to a database. 
+
+
+- **Visualizations:** 
+  Create bar, line, area, scatter, pie, or KPI visualizations to explore your data. 
+
+- **Data Catalog:**  
+  View automatically generated business definitions for your fields. 
+
+- **Dashboards:**
+  Build dashboards with multiple KPIs to share insights with stakeholders. 
 
 
 ## Documentation
@@ -110,6 +132,10 @@ We welcome contributions! See our [Contributing Guide](CONTRIBUTING.md) for deta
 - Code of Conduct
 - Reporting of security issues
 
+## Ready to scale?
+
+If you are looking for Datu SaaS then [Talk to us](hello@datu.fi)
+
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
