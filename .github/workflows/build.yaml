@@ -8,27 +8,21 @@ on:
   release:
     types: [published]
 
-env:
-  DEFAULT_PYTHON_VERSION: "3.11"
-
 jobs:
-  build-Wheel:
+  build-wheel:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.11","3.12"]
     steps:
       - uses: actions/checkout@v4
 
       - name: Setup Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: '3.10'
       
       - name: Install UV
         uses: astral-sh/setup-uv@v6
         with:
-          python-version: ${{ matrix.python }}
+          python-version: '3.10'
 
       - name: Install dependencies
         shell: sh
@@ -40,17 +34,32 @@ jobs:
         run: uv run hatch build
 
 
-      - name: Get wheel file name
-        run: echo wheel_filename=$( ls *.whl ) >> $GITHUB_ENV
-        working-directory: ./dist
-
-      - name: Test that wheel can be installed
-        run: uv run pip install dist/${{ env.wheel_filename }}
-
-      - name: Upload wheel artifact
+      - name: Store the distribution packages
         uses: actions/upload-artifact@v4
         with:
-          name: wheelfile_${{ matrix.python-version }}
-          path: dist/${{ env.wheel_filename }}
+          name: python-package-distributions
+          path: dist/
+  
+  deploy:
+    name: Upload release to PyPI
+    needs:
+      - build-wheel
+    runs-on: ubuntu-latest
 
- 
+    # environment is used by PyPI Trusted Publisher and is strongly encouraged
+    # https://docs.pypi.org/trusted-publishers/adding-a-publisher/
+    environment:
+      name: pypi
+      url: https://pypi.org/p/datu-core
+    permissions:
+      # IMPORTANT: this permission is mandatory for Trusted Publishing
+      id-token: write
+    
+    steps:
+      - name: Download all the dists
+        uses: actions/download-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+      - name: Publish distribution 📦 to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
