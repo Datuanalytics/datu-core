@@ -1,30 +1,25 @@
 const path = require("path");
+const { TextEncoder, TextDecoder } = require("util");
+
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;
 
 module.exports = {
   rootDir: ".",
-  testMatch: [
-    "<rootDir>/tests/frontend/**/*.test.js"
-  ],
-  testPathIgnorePatterns: [
-    "/node_modules/",
-    "/dist/"
-  ],
+  testMatch: ["<rootDir>/tests/frontend/**/*.test.js"],
+  testPathIgnorePatterns: ["/node_modules/", "/dist/"],
   moduleNameMapper: {
     "\\.(css|less|scss|sass)$": "identity-obj-proxy",
-    "^@src/(.*)$": "<rootDir>/frontend/src/$1"
+    "^@src/(.*)$": "<rootDir>/frontend/src/$1",
   },
-  setupFilesAfterEnv: [
-    "@testing-library/jest-dom"
-  ],
-  moduleDirectories: [
-    "node_modules",
-    path.resolve(__dirname, "node_modules")
-  ],
+  setupFilesAfterEnv: ["@testing-library/jest-dom"],
+  moduleDirectories: ["node_modules", path.resolve(__dirname, "node_modules")],
   transform: {
-    "^.+\\.[jt]sx?$": "babel-jest"
+    "^.+\\.[jt]sx?$": "babel-jest",
   },
   transformIgnorePatterns: [
-    "/node_modules/(?!(react-monaco-editor|monaco-editor)/)"
+    "/node_modules/(?!(react-monaco-editor|monaco-editor)/)",
   ],
-  testEnvironment: "jsdom"
+  testEnvironment: "jsdom",
+  setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
 };
