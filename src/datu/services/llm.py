@@ -17,7 +17,7 @@ settings = get_app_settings()
 llm_client = get_llm_client(provider=settings.llm_provider)
 
 
-def generate_response(messages: list[Any], system_prompt: str | None = None) -> str:
+async def generate_response(messages: list[Any], system_prompt: str | None = None) -> str:
     """Generate a response from the LLM based on the provided messages and system prompt.
 
     Args:
@@ -33,7 +33,7 @@ def generate_response(messages: list[Any], system_prompt: str | None = None) -> 
         if llm_client is None:
             logger.error("LLM client is not initialized.")
             raise ValueError("LLM client is not initialized.")
-        response_text = llm_client.chat_completion(messages, system_prompt)
+        response_text = await llm_client.chat_completion(messages, system_prompt)
         elapsed_time = time.time() - start_time
         logger.debug("LLM response took %.3f seconds", elapsed_time)
         logger.debug("LLM response: %s", response_text)

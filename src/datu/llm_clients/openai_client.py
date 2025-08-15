@@ -8,6 +8,7 @@ from typing import Union
 from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI
+from mcp_use import MCPAgent
 
 from datu.app_config import get_logger, settings
 from datu.base.llm_client import BaseLLMClient
@@ -65,6 +66,7 @@ class OpenAIClient(BaseLLMClient):
     """
 
     def __init__(self):
+        super().__init__()
         self.model = getattr(settings, "openai_model", "gpt-4o-mini")
         self.client = ChatOpenAI(
             api_key=settings.openai_api_key,
@@ -72,8 +74,29 @@ class OpenAIClient(BaseLLMClient):
             temperature=settings.llm_temperature,
         )
         self.history = ChatMessageHistory()
+        if settings.enable_mcp:
+            if not self.mcp_client:
+                raise RuntimeError("MCP is enabled but mcp_client was not initialized. ")
+            try:
+                self.agent = MCPAgent(
+                    llm=self.client,
+                    client=self.mcp_client,
+                    max_steps=settings.mcp.max_steps,
+                    use_server_manager=settings.mcp.use_server_manager,
+                )
+            except Exception:
+                # Prefer failing early so misconfig doesn’t silently degrade behavior
+                logger.exception("Failed to construct MCPAgent with provided MCP settings.")
+                raise
 
-    def chat_completion(self, messages: list[BaseMessage], system_prompt: str | None = None) -> str:
+    async def chat(self, input_text: str) -> str:
+        response = await self.agent.run(
+            input_text,
+            max_steps=30,
+        )
+        return response
+
+    async def chat_completion(self, messages: list[BaseMessage], system_prompt: str | None = None) -> str:
         if settings.simulate_llm_response:
             return create_simulated_llm_response()
         if not messages:
@@ -114,9 +137,20 @@ class OpenAIClient(BaseLLMClient):
             )
 
         self.history.add_message(HumanMessage(content=last_user_message))
-        response = self.client.invoke(self.history.messages)
-        self.history.add_message(response)
-        return response.content if response else ""
+        # Convert entire history messages to plain text for chat()
+        # Adjust this if your llm_with_tools expects different format
+        input_text = "\n".join(msg.content for msg in self.history.messages if hasattr(msg, "content"))
+
+        response = await self.chat(input_text)
+
+        # Assuming response is a BaseMessage or similar with 'content'
+        if hasattr(response, "content"):
+            self.history.add_message(response)
+            return response.content
+        else:
+            # If response is plain text string
+            self.history.add_message(HumanMessage(content=response))
+            return response
 
     def fix_sql_error(self, sql_code: str, error_msg: str, loop_count: int) -> str:
         """Generates a corrected SQL query based on the provided SQL code and error message.

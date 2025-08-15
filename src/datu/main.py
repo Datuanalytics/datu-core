@@ -11,7 +11,6 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from datu.app_config import get_logger, settings
-from datu.mcp.launcher import launch_mcp_server
 from datu.routers import chat, metadata, transformations
 from datu.schema_extractor.schema_cache import load_schema_cache
 
@@ -19,10 +18,7 @@ logger = get_logger(__name__)
 
 # Optionally load schema and graph-rag in cache for use in prompts or logging
 if settings.app_environment != "test":
-    if settings.enable_schema_rag:
-        launch_mcp_server("schema_rag_server")
-    else:
-        schema_data = load_schema_cache()
+    schema_data = load_schema_cache()
 
 
 # Create the FastAPI application instance.
