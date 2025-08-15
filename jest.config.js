@@ -1,8 +1,4 @@
 const path = require("path");
-const { TextEncoder, TextDecoder } = require("util");
-
-global.TextEncoder = TextEncoder;
-global.TextDecoder = TextDecoder;
 
 module.exports = {
   rootDir: ".",
