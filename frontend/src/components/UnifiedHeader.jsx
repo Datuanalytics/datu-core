@@ -1,9 +1,29 @@
+/**
+ * UnifiedHeader
+ * Application header bar with navigation, design mode toggle, and query selector.
+ *
+ * Props:
+ *   hasQueries (boolean): Whether there are queries to select
+ *   queries (array): List of query objects
+ *   selectedQueryIndices (array): Indices of selected queries
+ *   setSelectedQueryIndices (function): Setter for selectedQueryIndices
+ *   previewDataMap (object): Map of query id to preview data
+ *   setPreviewDataMap (function): Setter for previewDataMap
+ *   qualityMap (object): Map of query id to quality info
+ *   setQualityMap (function): Setter for qualityMap
+ *   toggleLeftPanel (function): Toggle sidebar visibility
+ *   leftPanelVisible (boolean): Whether sidebar is visible
+ *   isEditMode (boolean): Whether dashboard is in edit mode
+ *   setIsEditMode (function): Setter for isEditMode
+ */
 // src/components/UnifiedHeader.jsx
 import React from 'react';
-import { AppBar, Toolbar, Typography, Box, IconButton, Tooltip, Switch } from '@mui/material';
+import { AppBar, Toolbar, Typography, Box, IconButton, Tooltip } from '@mui/material';
+import SettingsIcon from '@mui/icons-material/Settings';
+import { useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import WysiwygIcon from '@mui/icons-material/Wysiwyg';
-import SparklesIcon from '@mui/icons-material/AutoAwesome';
+
 import MultiQuerySelector from './MultiQuerySelector';
 import DeveloperModeIcon from '@mui/icons-material/DeveloperMode';
 
@@ -23,19 +43,7 @@ const StyledToolbar = styled(Toolbar)(() => ({
   paddingRight: 4,
 }));
 
-const LeftContainer = styled(Box)(() => ({
-  display: 'flex',
-  alignItems: 'center',
-  gap: '0.4rem',
-  flexShrink: 0,
-}));
 
-const CenterContainer = styled(Box)(() => ({
-  flexGrow: 1,
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-}));
 
 const RightContainer = styled(Box)(() => ({
   display: 'flex',
@@ -58,13 +66,14 @@ export default function UnifiedHeader({
   isEditMode, 
   setIsEditMode, 
 }) {
+  const navigate = useNavigate();
   return (
     <StyledAppBar position="sticky" elevation={0}>
       <StyledToolbar>
         {/* Left: Logo */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <Tooltip title={leftPanelVisible ? 'Hide sidebar' : 'Show sidebar'}>
-            <IconButton onClick={toggleLeftPanel} size="small" sx={{ fontSize: 20, p: 0.9 }}>
+            <IconButton onClick={toggleLeftPanel} size="small" sx={{ fontSize: 20, p: 0.9 }} aria-label={leftPanelVisible ? 'Hide sidebar' : 'Show sidebar'}>
               <WysiwygIcon sx={{ fontSize: 20 }} />
             </IconButton>
           </Tooltip>
@@ -73,7 +82,7 @@ export default function UnifiedHeader({
               onClick={() => setIsEditMode(!isEditMode)}
               size="small"
               color={isEditMode ? 'primary' : 'default'}
-              aria-label="Toggle design mode"
+              aria-label={isEditMode ? 'Disable chart size editing' : 'Enable chart size editing'}
               sx={{ fontSize: 20, p: 0.9 }}
             >
               <DeveloperModeIcon sx={{ fontSize: 20 }} />
@@ -101,6 +110,17 @@ export default function UnifiedHeader({
               </RightContainer>
             </>
           )}
+          {/* Settings Icon for navigation to Data Source & Context page */}
+          <Tooltip title="Settings & LLM Context">
+            <IconButton
+              size="small"
+              sx={{ fontSize: 20, p: 0.9 }}
+              onClick={() => navigate('/settings')}
+              aria-label="Settings & LLM Context"
+            >
+              <SettingsIcon sx={{ fontSize: 20 }} />
+            </IconButton>
+          </Tooltip>
         </Box>
       </StyledToolbar>
     </StyledAppBar>

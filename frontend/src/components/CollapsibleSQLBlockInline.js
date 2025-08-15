@@ -1,11 +1,19 @@
-// src/components/CollapsibleSQLBlockInline.js
+
+/**
+ * CollapsibleSQLBlockInline
+ * Inline collapsible SQL code block with copy-to-clipboard functionality.
+ *
+ * Props:
+ *   code (string): SQL code to display
+ */
 import React, { useState } from 'react';
 import { Box, Button } from '@mui/material';
+
 
 const CollapsibleSQLBlockInline = ({ code }) => {
   const [isCollapsed, setIsCollapsed] = useState(true);
 
-  const toggleCollapse = () => setIsCollapsed(!isCollapsed);
+  const toggleCollapse = () => setIsCollapsed((prev) => !prev);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(code);
@@ -24,7 +32,7 @@ const CollapsibleSQLBlockInline = ({ code }) => {
         verticalAlign: 'middle',
       }}
     >
-      <Button onClick={toggleCollapse} size="small">
+      <Button onClick={toggleCollapse} size="small" aria-label={isCollapsed ? 'Show SQL code' : 'Hide SQL code'}>
         {isCollapsed ? 'Show Code' : 'Hide Code'}
       </Button>
       {!isCollapsed && (
@@ -32,7 +40,7 @@ const CollapsibleSQLBlockInline = ({ code }) => {
           <pre style={{ maxWidth: '100%', whiteSpace: 'pre-wrap', wordBreak: 'break-word', margin: 0 }}>
             <code>{code}</code>
           </pre>
-          <Button onClick={handleCopy} size="small">
+          <Button onClick={handleCopy} size="small" aria-label="Copy SQL code">
             Copy
           </Button>
         </Box>

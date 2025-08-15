@@ -1,4 +1,9 @@
-// src/theme.js
+/**
+ * theme.js
+ * MUI theme configuration for the application.
+ *
+ * Customizes palette, typography, and adds custom colors for charts and chat bubbles.
+ */
 import { createTheme } from '@mui/material/styles';
 
 const theme = createTheme({

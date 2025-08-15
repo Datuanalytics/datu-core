@@ -6,8 +6,10 @@ import UnifiedHeader from './components/UnifiedHeader';
 import FrontPage from './components/FrontPage';
 import ChatPanel from './components/ChatPanel';
 import RightPanelTabs from './components/RightPanelTabs';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import DataSourceContextPage from './pages/DataSourceContextPage';
 
-function App() {
+function MainApp() {
   const [started, setStarted] = useState(false);
   const [initialUserMessage, setInitialUserMessage] = useState('');
   const [queries, setQueries] = useState([]);
@@ -41,8 +43,7 @@ function App() {
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
+    <>
       <UnifiedHeader
         selectedTab={selectedTab}
         onTabChange={handleTabChange}
@@ -99,8 +100,22 @@ function App() {
           </Box>
         </Box>
       )}
+    </>
+  );
+}
+
+function AppWrapper() {
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<MainApp />} />
+          <Route path="/settings" element={<DataSourceContextPage />} />
+        </Routes>
+      </BrowserRouter>
     </ThemeProvider>
   );
 }
 
-export default App;
+export default AppWrapper;
