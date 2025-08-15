@@ -1,4 +1,19 @@
-// src/components/ChartTile.js
+/**
+ * ChartTile
+ * Main visualization card for displaying a chart, its configuration, data preview, SQL, and quality info.
+ * Handles auto-detection of columns, chart config, and rendering of Recharts visualizations.
+ *
+ * Props:
+ *   chartId (string): Unique chart identifier
+ *   title (string): Initial chart title
+ *   data (array): Chart data
+ *   sql (string): SQL query string
+ *   previewData (array): Data for preview tab
+ *   onRemove (func): Callback to remove chart
+ *   onTitleChange (func): Callback to update chart title
+ *   onSQLUpdate (func): Callback to update SQL
+ *   qualityData (object): Data quality info
+ */
 import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardContent, IconButton, Box, Typography, TextField, Tabs, Tab } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
@@ -21,12 +36,13 @@ import {
   YAxis,
   Tooltip,
   Legend,
+  Brush,
 } from 'recharts';
 import ChartConfigModal from './ChartConfigModal';
 import SqlModal from './SqlModal';
 
 
-// Define a list of acceptable date formats.
+// List of acceptable date formats for auto-detection and formatting
 const DATE_FORMATS = [
   'YYYY-MM-DD',
   'YYYY/MM/DD',
@@ -56,22 +72,7 @@ function isValidDate(value) {
   const parsed = moment(value, DATE_FORMATS, true);
   return parsed.isValid();
 }
-/**
- * Check whether the chosen X column contains duplicate values.
- * @param {Array<Object>} data   – full dataset
- * @param {string}        xCol   – key to inspect
- * @returns {boolean}
- */
-function hasDuplicateX(data, xCol) {
-  if (!data || data.length === 0 || !xCol) return false;
-  const seen = new Set();
-  for (const row of data) {
-    const val = row[xCol];
-    if (seen.has(val)) return true;
-    seen.add(val);
-  }
-  return false;
-}
+
 
 // Updated formatDateValue: if the string is a valid date per dayjs using defined formats, format it; otherwise, return it unchanged.
 function formatDateValue(value) {
@@ -91,25 +92,35 @@ function formatDateValue(value) {
 // Extended auto-detection function: chooses default x and y columns, and default chart type.
 // If a valid date string is detected, default to "line". If only one row, default to "kpi".
 function autoDetectColumns(data) {
-  if (!data || data.length === 0) return { defaultX: '', defaultY: '', defaultChartType: 'bar', defaultAggregation: 'none', defaultGroupBy: '' };
+  if (!data || data.length === 0) return {
+    defaultX: '', defaultY: '', defaultChartType: 'bar', defaultAggregation: 'none', defaultGroupBy: '',
+    defaultHighlightCategory: '', defaultHighlightValue: ''
+  };
   const row = data[0];
   const keys = Object.keys(row);
   let defaultX = '';
   let defaultY = '';
+  let defaultSecondaryY = '';
   let defaultChartType = 'bar';
   let defaultAggregation = 'none'; // Always default to 'none'
   let defaultGroupBy     = '';
-  
+  let defaultHighlightCategory = '';
+  let defaultHighlightValue = '';
   // Look for a date column: require that the value contains a dash or slash.
+  // Try to find a string column that looks like a date
   for (const key of keys) {
-    if (typeof row[key] === 'string' && isValidDate(row[key]) && !hasDuplicateX(data, key)) {
+    // If the column is a string and matches a known date format, use it as the X axis
+    if (isValidDate(row[key])) {
       defaultX = key;
-      defaultChartType = 'line';
+      defaultChartType = 'line'; // Default to line chart for time series
+      // Check if all rows have the same date value in this column
       const isConstantDate = data.every(row => row[key] === data[0][key]);
+      // If the date column is constant (not a time series), use bar chart instead
       if (isConstantDate) {
+        console.log('Detected constant date column, switching to bar chart');
         defaultChartType = 'bar';
       }
-      break;
+      break; // Stop after finding the first date column
     }
   }
   // If dataset contains only one row, default to KPI.
@@ -128,17 +139,84 @@ function autoDetectColumns(data) {
   if (!defaultX && keys.length > 0) {
     defaultX = keys[0];
   }
-  // For defaultY, select the first numeric column not the same as defaultX.
-  for (const key of keys) {
-    if (key !== defaultX && isNumeric(row[key])) {
-      defaultY = key;
-      break;
+  // Secondary Y auto-detection for obs_kw and windspeed_100m
+  const hasObsKW = keys.some(k => k.toLowerCase() === 'obs_kw');
+  const hasWindSpeed = keys.some(k => k.toLowerCase() === 'windspeed_100m');
+  if (hasObsKW && hasWindSpeed) {
+    defaultChartType = 'line';
+    defaultY = 'Obs_kW';
+    defaultSecondaryY = 'WINDSPEED_100m';
+  } else {
+    // For defaultY, select the first numeric column not the same as defaultX.
+    for (const key of keys) {
+      if (key !== defaultX && isNumeric(row[key])) {
+        defaultY = key;
+        break;
+      }
+    }
+    if (!defaultY) {
+      defaultY = keys.length > 1 ? keys[1] : keys[0];
+    }
+    // For secondary Y, pick another numeric column not defaultY or defaultX
+    for (const key of keys) {
+      if (key !== defaultX && key !== defaultY && isNumeric(row[key])) {
+        defaultSecondaryY = key;
+        break;
+      }
     }
   }
-  if (!defaultY) {
-    defaultY = keys.length > 1 ? keys[1] : keys[0];
+  // Highlight category auto-detection (substring match, case-insensitive)
+  const highlightKeywords = ['anomaly', 'flag', 'outlier', 'alert', 'status'];
+  for (const col of keys) {
+    // eslint-disable-next-line no-lone-blocks
+    const lowerCol = col.toLowerCase();{
+    console.log(`[Highlight category] Checking column "${lowerCol}"`);
+    for (const kw of highlightKeywords) 
+      if (lowerCol.includes(kw)) {
+        defaultHighlightCategory = col;
+        break;
+      }
+    }
+    if (defaultHighlightCategory) break;
   }
-  return { defaultX, defaultY, defaultChartType, defaultAggregation, defaultGroupBy, };
+  // Highlight value auto-detection (substring match, case-insensitive)
+  if (defaultHighlightCategory) {
+    const values = Array.from(new Set(data.map(r => r[defaultHighlightCategory])));
+    const valueKeywords = ['anomaly', 'outlier', 'alert', 'yes', 'true' ,'1'];
+    for (const val of values) {
+      const lowerVal = String(val).toLowerCase();
+      for (const kw of valueKeywords) {
+        if (lowerVal.includes(kw)) {
+          defaultHighlightValue = val;
+          break;
+        }
+        if (lowerVal === 'false') {
+          defaultHighlightValue = "True";
+          break;
+        }
+        if (lowerVal === '0') {
+          defaultHighlightValue = 1;
+          break;
+        }
+      }
+      if (defaultHighlightValue) break;
+    }
+    // Fallback: if any value contains 'anomaly' (case-insensitive), use it
+    if (!defaultHighlightValue) {
+      const anomalyVal = values.find(v => String(v).toLowerCase().includes('anomaly'));
+      if (anomalyVal) defaultHighlightValue = anomalyVal;
+    }
+  }
+  return {
+    defaultX,
+    defaultY,
+    defaultSecondaryY,
+    defaultChartType,
+    defaultAggregation,
+    defaultGroupBy,
+    defaultHighlightCategory,
+    defaultHighlightValue,
+  };
 }
 
 // Updated transformData: For each row, use formatDateValue for the xCol value.
@@ -263,6 +341,15 @@ function transformData(data, config) {
           obj[outKey] = val;
         });
       });
+      // Add secondaryYKey value if set and not in yKeys
+      if (config.secondaryYKey && !yKeys.includes(config.secondaryYKey)) {
+        // Use the first row for this x/series group
+        const firstRow = Object.values(seriesRows)[0]?.[0];
+        obj[config.secondaryYKey] = firstRow && isNumeric(firstRow[config.secondaryYKey]) ? Number(firstRow[config.secondaryYKey]) : null;
+      }
+      if (config.highlightCategory) {
+        obj._highlightValue = Object.values(seriesRows)[0]?.[0]?.[config.highlightCategory];
+      }
       return obj;
     });
   }
@@ -313,6 +400,13 @@ function transformData(data, config) {
     yKeys.forEach((key) => {
       obj[key] = isNumeric(row[key]) ? Number(row[key]) : row[key];
     });
+    // Add secondaryYKey if set and not in yKeys
+    if (config.secondaryYKey && !yKeys.includes(config.secondaryYKey)) {
+      obj[config.secondaryYKey] = isNumeric(row[config.secondaryYKey]) ? Number(row[config.secondaryYKey]) : row[config.secondaryYKey];
+    }
+    if (config.highlightCategory) {
+      obj._highlightValue = row[config.highlightCategory];
+    }
     return obj;
   });
 }
@@ -328,6 +422,10 @@ function formatNumber(value, decimalPlaces = 2, useThousandsSeparator = true) {
   });
 }
 
+/**
+ * ChartTile component
+ * @param {object} props
+ */
 function ChartTile({ chartId, title: initialTitle, data, sql, previewData, onRemove, onTitleChange, onSQLUpdate, qualityData }) {
   const theme = useTheme();
   const [title, setTitle] = useState(initialTitle || 'Untitled Chart');
@@ -341,8 +439,13 @@ function ChartTile({ chartId, title: initialTitle, data, sql, previewData, onRem
     seriesCol: '',
     decimalPlaces: 2,
     useThousandsSeparator: true,
+    highlightCategory: '',
+    highlightValue: '',
+    secondaryYKey: '',
   });
   const [chartData, setChartData] = useState([]);
+  // Brush range for x-axis zoom (startIndex, endIndex)
+  // Removed unused brushRange state
   const [showConfig, setShowConfig] = useState(false);
   const [tab, setTab] = useState(0); // 0: Viz, 1: Data, 2: SQL, 3: Quality
   const [sqlModalOpen, setSqlModalOpen] = useState(false);
@@ -371,14 +474,18 @@ function ChartTile({ chartId, title: initialTitle, data, sql, previewData, onRem
       const {
         defaultX,
         defaultY,
+        defaultSecondaryY,
         defaultChartType,
         defaultAggregation,
         defaultGroupBy,
+        defaultHighlightCategory,
+        defaultHighlightValue,
       } = autoDetectColumns(data);
       setConfig((prev) => {
         const next = { ...prev };
         if (!next.xCol) next.xCol = defaultX;
         if (!next.yKeys || next.yKeys.length === 0) next.yKeys = [defaultY];
+        if (!next.secondaryYKey && defaultSecondaryY) next.secondaryYKey = defaultSecondaryY;
         if (!next.chartType) next.chartType = defaultChartType;
         // Only set aggregation if auto-detect says so, but prefer 'none' unless needed
         if (next.aggregation === 'none' && defaultAggregation !== 'none') {
@@ -386,6 +493,12 @@ function ChartTile({ chartId, title: initialTitle, data, sql, previewData, onRem
         }
         if (!next.groupBy && defaultGroupBy) {
           next.groupBy = defaultGroupBy;
+        }
+        if (!next.highlightCategory && defaultHighlightCategory) {
+          next.highlightCategory = defaultHighlightCategory;
+        }
+        if (!next.highlightValue && defaultHighlightValue) {
+          next.highlightValue = defaultHighlightValue;
         }
         return next;
       });
@@ -400,7 +513,8 @@ function ChartTile({ chartId, title: initialTitle, data, sql, previewData, onRem
   // Transform data as per config.
   useEffect(() => {
     setChartData(transformData(data, config));
-  }, [data, config]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, config.chartType, config.xCol, config.yKeys, config.aggregation, config.groupBy, config.seriesCol]);
 
 /**
  * Persist configuration coming back from ChartConfigModal.
@@ -417,20 +531,20 @@ const handleApplyConfig = (newConfig) => {
     chartType:   updatedConfig.chartType,
     xCol:        updatedConfig.xCol,
     yKeys:       updatedConfig.yCol,
-    aggregation: updatedConfig.aggregation, // ← Do not override user's choice
+    aggregation: updatedConfig.aggregation,
     groupBy:     updatedConfig.groupBy,
     seriesCol:   updatedConfig.seriesCol || '',
     decimalPlaces: updatedConfig.decimalPlaces ?? 2,
     useThousandsSeparator: updatedConfig.useThousandsSeparator ?? true,
+    highlightCategory: updatedConfig.highlightCategory || '',
+    highlightValue: updatedConfig.highlightValue || '',
+    secondaryYKey: updatedConfig.secondaryYKey || '',
   };
   setConfig(finalConfig);
   setShowConfig(false);
 };
 
-
-
-
-
+  // Handle title edit blur
   const handleTitleBlur = () => {
     setIsEditingTitle(false);
     if (onTitleChange) onTitleChange(chartId, title);
@@ -438,9 +552,8 @@ const handleApplyConfig = (newConfig) => {
 
   // Calculate x-axis rotation settings based on the first x value.
   const getXAxisRotation = () => {
-    const firstX = chartData[0]?.x;
-    //if (firstX instanceof Date) return { angle: -45, textAnchor: 'end' };
-    //if (typeof firstX === 'string' && firstX.length > 8) return { angle: -45, textAnchor: 'end' };
+    // Optionally rotate if long string/date
+    // if (typeof chartData[0]?.x === 'string' && chartData[0]?.x.length > 8) return { angle: -45, textAnchor: 'end' };
     return { angle: 0, textAnchor: 'middle' };
   };
 
@@ -502,7 +615,7 @@ const handleApplyConfig = (newConfig) => {
   };
 
   function renderChart(config, chartData) {
-    const { chartType, xCol, yKeys = [], seriesCol = '' } = config;
+    const { chartType, yKeys = [], seriesCol = '', highlightCategory = '', highlightValue = '', secondaryYKey = '' } = config;
     const xAxisProps = getXAxisRotation();
     let seriesKeys = [];
     if (seriesCol && chartData.length > 0) {
@@ -510,6 +623,15 @@ const handleApplyConfig = (newConfig) => {
     } else {
       seriesKeys = yKeys;
     }
+    // Highlight logic
+    const highlightValues = highlightCategory
+      ? Array.from(new Set(chartData.map((row) => row._highlightValue).filter(Boolean)))
+      : [];
+    const highlightColor = (val) => {
+      const colors = ['#5C7285', '#F95D6A', '#5c856fff', '#2E8B57', '#4e6e8fff'];
+      const idx = highlightValues.indexOf(val);
+      return colors[idx % colors.length];
+    };
     switch (chartType) {
       case 'line':
         return (
@@ -522,11 +644,27 @@ const handleApplyConfig = (newConfig) => {
               tick={{ fill: theme.palette.text.secondary, fontSize: 11 }}
               {...xAxisProps}
             />
+            {/* Brush for x-axis zoom */}
+            <Brush
+              dataKey="x"
+              height={30}
+              stroke="#8884d8"
+            />
             <YAxis
               axisLine={false}
               tickLine={false}
               tick={{ fill: theme.palette.text.secondary, fontSize: 11 }}
+              yAxisId="left"
             />
+            {secondaryYKey && (
+              <YAxis
+                yAxisId="right"
+                orientation="right"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: theme.palette.text.secondary, fontSize: 11 }}
+              />
+            )}
             <Tooltip
               contentStyle={{ borderRadius: 4, boxShadow: theme.shadows[1] }}
               itemStyle={{ fontSize: 12 }}
@@ -541,13 +679,20 @@ const handleApplyConfig = (newConfig) => {
               align="right"
               wrapperStyle={{ fontSize: 12, color: theme.palette.text.secondary }}
             />
+            {/* Primary Y series */}
             {seriesKeys.map((key, index) => (
               <Line
                 key={key}
                 type="monotone"
                 dataKey={key}
                 stroke={colorByIndex(index)}
-                dot={false}
+                dot={(props) => {
+                  const { payload } = props;
+                  if (highlightCategory && highlightValue && payload._highlightValue === highlightValue) {
+                    return <circle cx={props.cx} cy={props.cy} r={3} fill="#F95D6A" stroke="#F95D6A" />;
+                  }
+                  return <circle cx={props.cx} cy={props.cy} r={1} fill="rgba(0, 0, 0, 0)" stroke="none" />;
+                }}
                 activeDot={false}
                 strokeWidth={1}
                 isAnimationActive
@@ -555,8 +700,33 @@ const handleApplyConfig = (newConfig) => {
                 animationBegin={index * 200}
                 minTickGap={30}
                 connectNulls={true}
+                yAxisId="left"
               />
             ))}
+            {/* Secondary Y series */}
+            {secondaryYKey && (
+              <Line
+                key={secondaryYKey}
+                type="monotone"
+                dataKey={secondaryYKey}
+                stroke={colorByIndex(seriesKeys.length)}
+                dot={(props) => {
+                  const { payload } = props;
+                  if (highlightCategory && highlightValue && payload._highlightValue === highlightValue) {
+                    return <circle cx={props.cx} cy={props.cy} r={3} fill="#F95D6A" stroke="#F95D6A" />;
+                  }
+                  return <circle cx={props.cx} cy={props.cy} r={1} fill="rgba(0, 0, 0, 0)" stroke="none" />;
+                }}
+                activeDot={false}
+                strokeWidth={1}
+                isAnimationActive
+                animationDuration={800}
+                animationBegin={seriesKeys.length * 200}
+                minTickGap={30}
+                connectNulls={true}
+                yAxisId="right"
+              />
+            )}
           </LineChart>
         );
 
@@ -571,7 +741,22 @@ const handleApplyConfig = (newConfig) => {
               tick={{ fill: theme.palette.text.secondary, fontSize: 11 }}
               {...xAxisProps}
             />
-            <YAxis axisLine={false} tickLine={false} tick={{ fill: theme.palette.text.secondary, fontSize: 11 }} />
+            {/* Brush for x-axis zoom */}
+            <Brush
+              dataKey="x"
+              height={30}
+              stroke="#8884d8"
+            />
+            <YAxis axisLine={false} tickLine={false} tick={{ fill: theme.palette.text.secondary, fontSize: 11 }} yAxisId="left" />
+            {secondaryYKey && (
+              <YAxis
+                yAxisId="right"
+                orientation="right"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: theme.palette.text.secondary, fontSize: 11 }}
+              />
+            )}
             <Tooltip
               contentStyle={{ borderRadius: 4, boxShadow: theme.shadows[1] }}
               itemStyle={{ fontSize: 12 }}
@@ -581,6 +766,7 @@ const handleApplyConfig = (newConfig) => {
               align="right"
               wrapperStyle={{ fontSize: 12, color: theme.palette.text.secondary }}
             />
+            {/* Primary Y series */}
             {seriesKeys.map((key, index) => (
               <Area
                 key={key}
@@ -588,6 +774,14 @@ const handleApplyConfig = (newConfig) => {
                 dataKey={key}
                 stroke={colorByIndex(index)}
                 fill={colorByIndex(index)}
+                dot={(props) => {
+                  const { payload } = props;
+                  if (highlightCategory && highlightValue && payload._highlightValue === highlightValue) {
+                    return <circle cx={props.cx} cy={props.cy} r={3} fill="#F95D6A" stroke="#F95D6A" />;
+                  }
+                  return <circle cx={props.cx} cy={props.cy} r={1} fill="rgba(0, 0, 0, 0)" stroke="none" />;
+                }}
+                activeDot={false}
                 fillOpacity={0.2}
                 strokeWidth={1}
                 isAnimationActive
@@ -595,8 +789,35 @@ const handleApplyConfig = (newConfig) => {
                 animationBegin={index * 200}
                 minTickGap={30}
                 connectNulls={true}
+                yAxisId="left"
               />
             ))}
+            {/* Secondary Y series */}
+            {secondaryYKey && (
+              <Area
+                key={secondaryYKey}
+                type="monotone"
+                dataKey={secondaryYKey}
+                stroke={colorByIndex(seriesKeys.length)}
+                fill={colorByIndex(seriesKeys.length)}
+                dot={(props) => {
+                  const { payload } = props;
+                  if (highlightCategory && highlightValue && payload._highlightValue === highlightValue) {
+                    return <circle cx={props.cx} cy={props.cy} r={5} fill="#F95D6A" stroke="#F95D6A" />;
+                  }
+                  return <circle cx={props.cx} cy={props.cy} r={3} fill="rgba(0,0,0,0.08)" stroke="none" />;
+                }}
+                activeDot={false}
+                fillOpacity={0.2}
+                strokeWidth={1}
+                isAnimationActive
+                animationDuration={800}
+                animationBegin={seriesKeys.length * 200}
+                minTickGap={30}
+                connectNulls={true}
+                yAxisId="right"
+              />
+            )}
           </AreaChart>
         );
 
@@ -649,6 +870,12 @@ const handleApplyConfig = (newConfig) => {
               tick={{ fill: theme.palette.text.secondary, fontSize: 11 }}
               {...xAxisProps}
             />
+            {/* Brush for x-axis zoom */}
+            <Brush
+              dataKey="x"
+              height={30}
+              stroke="#8884d8"
+            />
             <YAxis axisLine={false} tickLine={false} tick={{ fill: theme.palette.text.secondary, fontSize: 11 }} />
             <Tooltip
               contentStyle={{ borderRadius: 4, boxShadow: theme.shadows[1] }}
@@ -663,14 +890,24 @@ const handleApplyConfig = (newConfig) => {
               <Bar
                 key={key}
                 dataKey={key}
-                fill={colorByIndex(index)}
                 name={key}
                 radius={[4, 4, 0, 0]}
                 isAnimationActive
                 animationDuration={800}
                 animationBegin={index * 200}
                 minTickGap={30}
-              />
+              >
+                {chartData.map((entry, idx) => (
+                  <Cell
+                    key={`cell-${idx}`}
+                    fill={
+                      highlightCategory && entry._highlightValue
+                        ? highlightColor(entry._highlightValue)
+                        : colorByIndex(index)
+                    }
+                  />
+                ))}
+              </Bar>
             ))}
           </BarChart>
         );
@@ -680,6 +917,33 @@ const handleApplyConfig = (newConfig) => {
   // Data preview logic
   const allData = previewData || data || [];
   const previewRows = expandedPreview ? allData : allData.slice(0, 10);
+
+  // CSV export utility
+  function exportToCSV(rows, filename = 'data.csv') {
+    if (!rows || rows.length === 0) return;
+    const cols = Object.keys(rows[0]);
+    const csvRows = [
+      cols.join(','), // header
+      ...rows.map(row =>
+        cols.map(col => {
+          const val = row[col];
+          // Escape quotes and commas
+          if (typeof val === 'string') {
+            return `"${val.replace(/"/g, '""')}"`;
+          }
+          return val;
+        }).join(',')
+      ),
+    ];
+    const csvContent = csvRows.join('\r\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
 
   // SQL edit logic
   const handleSQLSave = (newSQL) => {
@@ -697,6 +961,16 @@ const handleApplyConfig = (newConfig) => {
       case 1:
         return (
           <Box sx={{ width: '100%', height: '100%', minHeight: 0 }}>
+            {/* Download CSV button */}
+            <Box sx={{ mb: 1, display: 'flex', justifyContent: 'flex-end' }}>
+              <button
+                style={{ fontSize: '0.80rem', padding: '4px 12px', borderRadius: 4, border: `1px solid ${theme.palette.divider}`, background: theme.palette.action.hover, cursor: 'pointer' }}
+                onClick={() => exportToCSV(allData, `${title || 'data'}.csv`)}
+                disabled={!allData || allData.length === 0}
+              >
+                Download CSV
+              </button>
+            </Box>
             {previewRows === undefined ? (
               <Typography variant="body2">Loading preview...</Typography>
             ) : previewRows.length === 0 ? (
@@ -816,10 +1090,10 @@ const handleApplyConfig = (newConfig) => {
         }
         action={
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <IconButton size="small" onClick={() => setShowConfig(true)} aria-label="Configure Chart">
+            <IconButton size="small" onClick={() => setShowConfig(true)} aria-label="Configure chart">
               <EditIcon fontSize="inherit" />
             </IconButton>
-            <IconButton size="small" onClick={() => onRemove && onRemove(chartId)} aria-label="Remove Chart">
+            <IconButton size="small" onClick={() => onRemove && onRemove(chartId)} aria-label="Remove chart">
               <CloseIcon fontSize="inherit" />
             </IconButton>
           </Box>
@@ -852,10 +1126,10 @@ const handleApplyConfig = (newConfig) => {
         }}
         TabIndicatorProps={{ style: { height: 2, borderRadius: 2 } }}
       >
-        <Tab label="Visualization" disableRipple />
-        <Tab label="Data Preview" disableRipple />
-        <Tab label="SQL" disableRipple />
-        <Tab label="Data Quality" disableRipple />
+        <Tab label="Visualization" disableRipple aria-label="Visualization tab" />
+        <Tab label="Data Preview" disableRipple aria-label="Data preview tab" />
+        <Tab label="SQL" disableRipple aria-label="SQL tab" />
+        <Tab label="Data Quality" disableRipple aria-label="Data quality tab" />
       </Tabs>
       <CardContent sx={{ flexGrow: 1, pt: 0, p: 1, height: '100%', minHeight: 0 }}>
         {renderTabContent()}
@@ -875,6 +1149,9 @@ const handleApplyConfig = (newConfig) => {
           onApply={handleApplyConfig}
           decimalPlaces={config.decimalPlaces}
           useThousandsSeparator={config.useThousandsSeparator}
+          highlightCategory={config.highlightCategory}
+          highlightValue={config.highlightValue}
+          secondaryYKey={config.secondaryYKey}
         />
       )}
     </Card>

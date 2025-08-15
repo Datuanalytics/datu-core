@@ -1,3 +1,16 @@
+/**
+ * ChatPanel
+ * Main chat interface for user/assistant conversation, message sending, and SQL block rendering.
+ *
+ * Props:
+ *   setQueries (func): Callback to set queries
+ *   initialUserMessage (string): Initial user message
+ *   onNewQuery (func): Callback for new query
+ *   conversation (array): Conversation history
+ *   setConversation (func): Setter for conversation
+ *   selectedQueryIndices (array): Selected query indices
+ *   setSelectedQueryIndices (func): Setter for selected query indices
+ */
 import React, { useState, useEffect, useRef } from 'react';
 import { Box, Typography, IconButton, InputBase, CircularProgress } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
@@ -5,7 +18,7 @@ import axios from 'axios';
 import { useTheme } from '@mui/material/styles';
 import CollapsibleSQLBlockInline from './CollapsibleSQLBlockInline';
 
-let ID_TITLE = 0
+let ID_TITLE = 0; // Initialize ID_TITLE for unique query identification
 
 function ChatPanel({ setQueries, initialUserMessage, onNewQuery, conversation, setConversation, selectedQueryIndices, setSelectedQueryIndices }) {
   const theme = useTheme();

@@ -159,7 +159,7 @@ class SchemaExtractor:
             logger.warning(f"Could not sample rows for categorical detection on table {table.table_name}: {e}")
 
 
-def load_schema_cache() -> list[SchemaGlossary]:
+def load_schema_cache(force_refresh: bool = False) -> list[SchemaGlossary]:
     """Load the cached schema if it is fresh, or re-discover and merge with glossary.
     This function checks if the cached schema file exists and is within the refresh threshold.
     If the cache is valid, it loads the schema from the cache.
@@ -176,11 +176,12 @@ def load_schema_cache() -> list[SchemaGlossary]:
         KeyError: If there is an error with the profile or target configuration.
         JSONDecodeError: If there is an error decoding the JSON cache file.
 
+    If force_refresh is True, always refresh the cache regardless of age.
     """
     cache_file = settings.schema_cache_file
     refresh_threshold_seconds = settings.schema_refresh_threshold_days * 86400
 
-    if os.path.exists(cache_file):
+    if not force_refresh and os.path.exists(cache_file):
         try:
             with open(cache_file, "r", encoding="utf-8") as f:
                 cache_data = json.load(f)

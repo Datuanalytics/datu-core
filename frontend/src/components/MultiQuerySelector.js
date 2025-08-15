@@ -1,4 +1,16 @@
-// src/components/MultiQuerySelector.js
+/**
+ * MultiQuerySelector
+ * Dropdown selector for choosing multiple SQL queries, with data preview fetching.
+ *
+ * Props:
+ *   queries (array): List of query objects with id, sql, and title
+ *   selectedQueryIndices (array): Indices of selected queries
+ *   setSelectedQueryIndices (function): Setter for selectedQueryIndices
+ *   previewDataMap (object): Map of query id to preview data
+ *   setPreviewDataMap (function): Setter for previewDataMap
+ *   qualityMap (object): Map of query id to quality info
+ *   setQualityMap (function): Setter for qualityMap
+ */
 import React, { useEffect } from 'react';
 import { Box, FormControl, InputLabel, Select, MenuItem, Checkbox, ListItemText } from '@mui/material';
 import axios from 'axios';
@@ -19,15 +31,11 @@ function MultiQuerySelector({
         setPreviewDataMap(prev => ({ ...prev, [id]: undefined }));
         if (queries[idx]) {
           const sql = queries[idx].sql;
-          console.log(`[MultiQuerySelector] Fetching preview for query index ${idx} with SQL:`, sql);
           try {
             const resp = await axios.post('/api/transform/preview/', { sql_code: sql, limit: 10 });
-            console.log(`[MultiQuerySelector] Preview fetched for query index ${id}:`, resp.data.preview);
-            setPreviewDataMap(prev => ({ ...prev, [queries[idx].id]: resp.data.preview }))
+             setPreviewDataMap(prev => ({ ...prev, [queries[idx].id]: resp.data.preview }))
           } catch (err) {
-            console.error('Error fetching data preview for query', idx, err);
-            // In case of error, mark as loaded (empty array) so the UI shows "No data returned"
-            setPreviewDataMap((prev) => ({ ...prev, [id]: [] }));
+             setPreviewDataMap((prev) => ({ ...prev, [id]: [] }));
           }
         }
       }
@@ -52,8 +60,9 @@ function MultiQuerySelector({
           },
         }}
       >
-        <InputLabel>SQL request</InputLabel>
+        <InputLabel id="multi-query-label">SQL request</InputLabel>
         <Select
+          labelId="multi-query-label"
           multiple
           label="SQL request"
           value={selectedQueryIndices}
@@ -61,10 +70,11 @@ function MultiQuerySelector({
           renderValue={(selected) =>
             selected.map((idx) => queries[idx]?.title).join(', ')
           }
+          aria-label="Select SQL requests"
         >
           {queries.map((q, index) => (
             <MenuItem key={index} value={index}>
-              <Checkbox checked={selectedQueryIndices.indexOf(index) > -1} size="small" />
+              <Checkbox checked={selectedQueryIndices.indexOf(index) > -1} size="small" inputProps={{ 'aria-label': `Select query ${q.title}` }} />
               <ListItemText primary={q.title} />
             </MenuItem>
           ))}
