@@ -6,9 +6,10 @@ import shutil
 
 import networkx as nx
 import pytest
-from helpers.sample_schemas import SchemaTestFixtures
 
 from datu.services.schema_rag import SchemaGraphBuilder, SchemaRAG, SchemaTripleExtractor
+
+from tests.helpers.sample_schemas import SchemaTestFixtures
 
 TEST_GRAPH_DIR = "test_graph_rag"
 
