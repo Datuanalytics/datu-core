@@ -63,7 +63,7 @@ uv venv .venv # create a virtual environment
 source .venv/bin/activate # activate .venv, on Windows: venv\Scripts\activate
 uv sync --all-groups --all-extras # sync packages
 ```
-- Minimum python requirement for this application is 3.10
+- Minimum python requirement for this application is 3.11
 
 #### VSCode setup
 
