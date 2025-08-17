@@ -8,7 +8,12 @@
   </h2>
 
   <div align="center">
-    <a href="https://github.com/Datuanalytics/datu-core/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache%202.0-blue.svg"/></a>
+    <a href="https://github.com/Datuanalytics/datu-core/graphs/commit-activity"><img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/Datuanalytics/datu-core"/></a>
+    <a href="https://github.com/Datuanalytics/datu-core/issues"><img alt="GitHub open issues" src="https://img.shields.io/github/issues/Datuanalytics/datu-core"/></a>
+    <a href="https://github.com/Datuanalytics/datu-core/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/Datuanalytics/datu-core"/></a>
+    <a href="https://github.com/Datuanalytics/datu-core/pulls"><img alt="GitHub open pull requests" src="https://img.shields.io/github/issues-pr/Datuanalytics/datu-core"/></a>
+    <a href="https://pypi.org/project/datu-core/"><img alt="PyPI version" src="https://img.shields.io/pypi/v/datu-core"/></a>
+    <a href="https://python.org"><img alt="Python versions" src="https://img.shields.io/pypi/pyversions/datu-core"/></a>
   </div>
   
   <p>
