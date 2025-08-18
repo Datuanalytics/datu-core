@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "sql_generator": {
+      "command": "python",
+      "args": ["-m", "datu.mcp.tools.sql_generator"],
+      "env": { "PYTHONPATH": "." }
+    }
+  }
+}

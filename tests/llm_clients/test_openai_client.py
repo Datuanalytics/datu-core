@@ -38,57 +38,64 @@ def test_extract_json_from_text_cases():
 
 
 @pytest.mark.usefixtures("simulate")
-def test_chat_completion_simulated():
+@pytest.mark.asyncio
+async def test_chat_completion_simulated():
     """Test that the chat completion method returns a simulated response."""
     llm_client = openai_client.OpenAIClient()
-    result = llm_client.chat_completion(messages=["Hello"], system_prompt="You are a helpful assistant.")
+    result = await llm_client.chat_completion(messages=["Hello"], system_prompt="You are a helpful assistant.")
     assert isinstance(result, str)
     assert "SELECT" in result  # based on create_simulated_llm_response content
 
 
-def test_chat_completion_raises_on_empty_messages():
+@pytest.mark.asyncio
+async def test_chat_completion_raises_on_empty_messages():
     """Ensure ValueError is raised if messages list is empty."""
     llm_client = openai_client.OpenAIClient()
     with pytest.raises(ValueError, match="chat_completion was called with an empty message list"):
-        llm_client.chat_completion(messages=[])
+        await llm_client.chat_completion(messages=[])
 
 
-def test_chat_completion_raises_on_dict_missing_role():
+@pytest.mark.asyncio
+async def test_chat_completion_raises_on_dict_missing_role():
     """Ensure ValueError is raised if a dict message lacks a 'role' key."""
     llm_client = openai_client.OpenAIClient()
     bad_message = {"content": "Hi, help me out."}
     with pytest.raises(ValueError, match="must have a 'role' key"):
-        llm_client.chat_completion(messages=[bad_message])
+        await llm_client.chat_completion(messages=[bad_message])
 
 
-def test_chat_completion_raises_on_dict_with_non_user_role():
+@pytest.mark.asyncio
+async def test_chat_completion_raises_on_dict_with_non_user_role():
     """Ensure ValueError is raised if a dict message has a non-'user' role."""
     llm_client = openai_client.OpenAIClient()
     bad_message = {"role": "assistant", "content": "Hi, help me out."}
     with pytest.raises(ValueError, match="must have a 'role' key with value 'user'"):
-        llm_client.chat_completion(messages=[bad_message])
+        await llm_client.chat_completion(messages=[bad_message])
 
 
-def test_chat_completion_raises_on_dict_missing_content():
+@pytest.mark.asyncio
+async def test_chat_completion_raises_on_dict_missing_content():
     """Ensure ValueError is raised if a dict message lacks a 'content' key."""
     llm_client = openai_client.OpenAIClient()
     bad_message = {"role": "user"}
     with pytest.raises(ValueError, match="must contain a 'content' key"):
-        llm_client.chat_completion(messages=[bad_message])
+        await llm_client.chat_completion(messages=[bad_message])
 
 
-def test_chat_completion_raises_on_unsupported_message_type():
+@pytest.mark.asyncio
+async def test_chat_completion_raises_on_unsupported_message_type():
     """Ensure TypeError is raised if the message is not a dict or HumanMessage."""
     llm_client = openai_client.OpenAIClient()
     with pytest.raises(TypeError, match="Unsupported message type"):
-        llm_client.chat_completion(messages=[42])  # Invalid type
+        await llm_client.chat_completion(messages=[42])  # Invalid type
 
 
-def test_chat_completion_raises_on_non_human_base_message():
+@pytest.mark.asyncio
+async def test_chat_completion_raises_on_non_human_base_message():
     """Ensure TypeError is raised if the message is a SystemMessage or other BaseMessage."""
     llm_client = openai_client.OpenAIClient()
     with pytest.raises(TypeError, match="Unsupported message type"):
-        llm_client.chat_completion(messages=[SystemMessage(content="Set context.")])
+        await llm_client.chat_completion(messages=[SystemMessage(content="Set context.")])
 
 
 @pytest.mark.usefixtures("simulate")

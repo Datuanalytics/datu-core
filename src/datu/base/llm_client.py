@@ -2,6 +2,10 @@
 
 from abc import ABC, abstractmethod
 
+from mcp_use import MCPClient
+
+from datu.app_config import settings
+
 
 class BaseLLMClient(ABC):
     """BaseLLMClient class to provide a common interface for LLM clients.
@@ -9,8 +13,23 @@ class BaseLLMClient(ABC):
     providing a common interface and shared functionality.
     """
 
+    def __init__(self):
+        """Initializes the BaseLLMClient.
+            Sets up the client and MCP client if enabled in the settings.
+
+        Attributes:
+            client: The LLM client instance.
+            mcp_client: The MCP client instance if MCP is enabled in the settings.
+            agent: The agent instance if applicable.
+        """
+        self.client = None
+        self.mcp_client = None
+        if settings.enable_mcp:
+            self.mcp_client = MCPClient.from_config_file(settings.mcp.config_file)
+        self.agent = None
+
     @abstractmethod
-    def chat_completion(self, messages: list, system_prompt: str | None = None) -> str:
+    async def chat_completion(self, messages: list, system_prompt: str | None = None) -> str:
         """Given a conversation (and an optional system prompt), returns the assistant's text response."""
 
     @abstractmethod

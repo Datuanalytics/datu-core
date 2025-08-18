@@ -15,6 +15,7 @@ from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from datu.integrations.config import IntegrationConfigs
+from datu.mcp.config import MCPConfig
 from datu.services.config import SchemaRAGConfig
 
 
@@ -72,7 +73,11 @@ class DatuConfig(BaseSettings):
         simulate_llm_response (str): Whether to simulate LLM responses.
         schema_sample_limit (int): The maximum number of rows to sample from the schema.
         schema_categorical_threshold (int): The threshold for categorical columns in the schema.
+        enable_mcp (bool): Whether to enable MCP integration.
+        mcp (MCPConfig | None): Configuration settings for MCP integration.
         enable_schema_rag (bool): Enable RAG for schema extraction.
+        schema_rag (SchemaRAGConfig | None): Configuration settings for schema RAG.
+
 
     """
 
@@ -94,6 +99,11 @@ class DatuConfig(BaseSettings):
     schema_categorical_detection: bool = True
     schema_sample_limit: int = 1000
     schema_categorical_threshold: int = 10
+    enable_mcp: bool = False
+    mcp: MCPConfig | None = Field(
+        default_factory=MCPConfig,
+        description="Configuration settings for MCP integration.",
+    )
     enable_schema_rag: bool = False
     schema_rag: SchemaRAGConfig | None = Field(
         default_factory=SchemaRAGConfig,
