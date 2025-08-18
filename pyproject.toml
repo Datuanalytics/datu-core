@@ -312,7 +312,7 @@ ignore_missing_imports = true
 [tool.towncrier]
 directory = "changelog.d"
 filename = "CHANGELOG.md"
-package = "datu-core"
+package = "datu"
 package_dir = "src"
 start_string = "<!-- towncrier release notes start -->\n"
 underlines = ["", "", ""]
