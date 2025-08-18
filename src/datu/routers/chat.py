@@ -14,6 +14,7 @@ from datu.services.sql_generator.core import (
     QueryDetails,
     estimate_query_complexity,
     extract_sql_blocks,
+    generate_sql_core,
     get_query_execution_time_estimate,
 )
 from datu.services.sql_generator.normalizer import normalize_for_preview
@@ -38,6 +39,9 @@ async def chat_with_llm(request: ChatRequest):
         }
     """
     try:
+        if not settings.enable_mcp:
+            return await generate_sql_core(request)
+
         if not request.system_prompt:
             system_prompt = """
 You have access to MCP tools (e.g., SQL generation, web browsing, file operations, data retrieval).

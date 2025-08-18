@@ -66,6 +66,7 @@ class OpenAIClient(BaseLLMClient):
     """
 
     def __init__(self):
+        """Initializes the OpenAIClient with the configured model and API key."""
         super().__init__()
         self.model = getattr(settings, "openai_model", "gpt-4o-mini")
         self.client = ChatOpenAI(
@@ -74,6 +75,7 @@ class OpenAIClient(BaseLLMClient):
             temperature=settings.llm_temperature,
         )
         self.history = ChatMessageHistory()
+        self.agent = None
         if settings.enable_mcp:
             if not self.mcp_client:
                 raise RuntimeError("MCP is enabled but mcp_client was not initialized. ")
@@ -90,6 +92,14 @@ class OpenAIClient(BaseLLMClient):
                 raise
 
     async def chat(self, input_text: str) -> str:
+        """Sends a chat message to the MCP agent and returns the response.
+        Args:
+            input_text (str): The input text to send to the agent.
+        Returns:
+            str: The response from the agent."""
+
+        if not settings.enable_mcp or self.agent is None:
+            raise RuntimeError("chat() requires MCP enabled and an initialized agent.")
         response = await self.agent.run(
             input_text,
             max_steps=30,
@@ -97,6 +107,13 @@ class OpenAIClient(BaseLLMClient):
         return response
 
     async def chat_completion(self, messages: list[BaseMessage], system_prompt: str | None = None) -> str:
+        """Generates a chat completion response based on the provided messages and system prompt.
+        Args:
+            messages (list[BaseMessage]): A list of messages to send to the LLM.
+            system_prompt (str | None): An optional system prompt to guide the LLM's response.
+        Returns:
+            str: The generated response from the LLM.
+        """
         if settings.simulate_llm_response:
             return create_simulated_llm_response()
         if not messages:
@@ -141,7 +158,12 @@ class OpenAIClient(BaseLLMClient):
         # Adjust this if your llm_with_tools expects different format
         input_text = "\n".join(msg.content for msg in self.history.messages if hasattr(msg, "content"))
 
-        response = await self.chat(input_text)
+        if settings.enable_mcp:
+            # uses MCP agent
+            response = await self.chat(input_text)
+        else:
+            # direct LLM call without MCP
+            response = await self.client.ainvoke(self.history.messages)
 
         # Assuming response is a BaseMessage or similar with 'content'
         if hasattr(response, "content"):

@@ -99,7 +99,7 @@ class DatuConfig(BaseSettings):
     schema_categorical_detection: bool = True
     schema_sample_limit: int = 1000
     schema_categorical_threshold: int = 10
-    enable_mcp: bool = True
+    enable_mcp: bool = False
     mcp: MCPConfig | None = Field(
         default_factory=MCPConfig,
         description="Configuration settings for MCP integration.",
