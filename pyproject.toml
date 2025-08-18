@@ -68,7 +68,6 @@ dev = [
 ]
 postgres = [
     "psycopg2-binary>=2.9.6",
-    "dbt-postgres>=1.9.0",
 ]
 sqldb = [
     "pyodbc>=5.2.0",
