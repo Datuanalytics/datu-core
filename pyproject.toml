@@ -82,6 +82,13 @@ docs = [
     "mkdocs-macros-plugin~=1.3.7",
     "mkdocstrings-python~=1.16.10"
 ]
+all = [
+    # postgres
+    "psycopg2-binary>=2.9.6",
+
+    #sqldb
+    "pyodbc>=5.2.0",
+]
 
 [[project.maintainers]]
 name = "Datu"
