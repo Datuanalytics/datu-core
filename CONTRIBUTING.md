@@ -142,7 +142,7 @@ task quality-check # check if there are errors and fix them!
 All contributions to Datu need to start on a [fork of the repository](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo). Once you have successfully forked the Datu core repo, clone a local version to your machine:
 
 ```sh
-git clone https://github.com/GITHUB-USERNAME/prefect.git
+git clone https://github.com/GITHUB-USERNAME/datu-core.git
 cd datu-core
 ```
 
