@@ -21,7 +21,8 @@ def clean_test_graph_cache():
         shutil.rmtree(TEST_GRAPH_DIR)
     os.makedirs(TEST_GRAPH_DIR)
     yield
-    shutil.rmtree(TEST_GRAPH_DIR)
+    if os.path.exists(TEST_GRAPH_DIR):
+        shutil.rmtree(TEST_GRAPH_DIR)
 
 
 def test_init_with_dict_schema():
