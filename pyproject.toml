@@ -23,7 +23,6 @@ dependencies = [
     "langchain-openai>=0.3,<0.4",
     "pydantic-settings>=2.8.1",
     "types-psycopg2>=2.9.21.20250318",
-    "dbt-core>=1.9.3",
     "types-pyyaml>=6.0.12.20250402",
     "sql-metadata>=2.17.0",
     "sentence-transformers>=2.5.1",
