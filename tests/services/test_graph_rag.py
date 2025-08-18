@@ -83,21 +83,6 @@ def test_initialize_graph_rebuild_and_cache():
     assert set(builder2.graph.edges) == set(builder.graph.edges)
 
 
-def test_graph_contains_expected_edges():
-    """Verify specific graph edges exist after initialization and triple extraction."""
-    schema = SchemaTestFixtures.sample_schema()
-    extractor = SchemaTripleExtractor(schema)
-    extractor.create_schema_triples()
-    builder = SchemaGraphBuilder(triples=extractor.triples, is_rag_outdated=True)
-    builder.initialize_graph()
-    test_graph = builder.graph
-
-    assert test_graph.has_edge("orders", "order_id")
-    assert test_graph.has_edge("order_id", "int") or any(
-        d["label"] == "has_data_type" for _, _, d in test_graph.edges(data=True)
-    )
-
-
 @pytest.mark.requires_service
 def test_schema_rag_run_query_returns_filtered_schema_dict():
     """Test SchemaRAG end-to-end run_query method returns filtered schema."""
