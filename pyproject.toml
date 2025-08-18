@@ -238,12 +238,6 @@ directory = "build/coverage/html"
 [tool.coverage.xml]
 output = "build/coverage/coverage.xml"
 
-[tool.uv]
-environments = ["sys_platform == 'darwin'", "sys_platform == 'linux'", "sys_platform == 'win32'"]
-
-[tool.uv.sources]
-en-core-web-lg = { url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_lg-3.8.0/en_core_web_lg-3.8.0-py3-none-any.whl" }
-
 [tool.ruff]
 line-length = 120
 indent-width = 4
