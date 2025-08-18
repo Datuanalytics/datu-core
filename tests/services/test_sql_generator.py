@@ -1,4 +1,3 @@
-# tests/test_sql_generator.py
 """
 Tests for SQL generator modules using real code paths, with only the LLM and DB
 execution mocked to avoid external calls.
@@ -24,10 +23,6 @@ from src.datu.mcp.tools.sql_generator import sql_generate
 from src.datu.services.sql_generator import core
 from src.datu.services.sql_generator.normalizer import normalize_for_preview
 
-# ---------------------------
-# Helpers / fixtures
-# ---------------------------
-
 
 @pytest.fixture(autouse=True)
 def _reset_db_connector(monkeypatch):
@@ -43,11 +38,6 @@ def _reset_db_connector(monkeypatch):
 
     monkeypatch.setattr(conn, "run_transformation", no_op)
     yield
-
-
-# ---------------------------
-# core.py unit tests
-# ---------------------------
 
 
 def test_extract_sql_blocks_named_only():
@@ -115,11 +105,6 @@ def test_estimate_query_complexity_uses_real_parser():
     q = 'SELECT "id", "amount" FROM public."orders" ORDER BY "id";'
     c = core.estimate_query_complexity(q)
     assert isinstance(c, int) and c >= 1
-
-
-# ----------------------------------------------------------
-# generate_sql_core integration tests with mocked LLM calls
-# ----------------------------------------------------------
 
 
 @pytest.mark.asyncio
@@ -198,11 +183,6 @@ def test_normalize_for_preview_headers_bullets_and_spacing():
     assert "**Complexity**" not in out
     assert "**Estimated Execution Time**" not in out
     assert re.search(r"Query name:\s*My Query\n```sql", out, flags=re.I)
-
-
-# ------------------------------------------------------
-# mcp.tools.sql_generator tests (no LLM invoked here)
-# ------------------------------------------------------
 
 
 @pytest.mark.asyncio
