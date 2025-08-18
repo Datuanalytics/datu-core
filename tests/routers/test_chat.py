@@ -1,11 +1,6 @@
 # tests/routers/test_chat.py
 """
-Simple smoke tests for the chat SQL FastAPI endpoint (self-contained).
-
-- No conftest usage; sys.path is adjusted here.
-- Uses httpx.ASGITransport for httpx>=0.28.
-- Mocks only datu.services.llm.generate_response via monkeypatch.
-- Google-style docstrings.
+Simple smoke tests for the chat SQL FastAPI endpoint (self-contained)
 """
 
 from __future__ import annotations
@@ -43,9 +38,27 @@ async def test_happy_path_single_sql_block(monkeypatch):
     async def fake_generate(_msgs, _sys):
         return llm_out
 
-    monkeypatch.setattr(chat, "generate_response", fake_generate)
-    monkeypatch.setattr(chat, "estimate_query_complexity", lambda _sql: 3)
-    monkeypatch.setattr(chat, "get_query_execution_time_estimate", lambda _c: "Fast (<1s)")
+    # Patch the actual call site used by the core the router invokes.
+    monkeypatch.setattr(
+        "datu.services.sql_generator.core.load_schema_cache",
+        lambda *a, **k: [],
+        raising=True,
+    )
+    monkeypatch.setattr(
+        "datu.services.sql_generator.core.generate_response",
+        fake_generate,
+        raising=True,
+    )
+    monkeypatch.setattr(
+        "datu.services.sql_generator.core.estimate_query_complexity",
+        lambda _sql: 3,
+        raising=True,
+    )
+    monkeypatch.setattr(
+        "datu.services.sql_generator.core.get_query_execution_time_estimate",
+        lambda _c: "Fast (<1s)",
+        raising=True,
+    )
 
     app = _make_app()
     transport = httpx.ASGITransport(app=app)
@@ -70,7 +83,12 @@ async def test_error_path_llm_raises_500(monkeypatch):
     async def boom(*_args, **_kwargs):
         raise RuntimeError("LLM down")
 
-    monkeypatch.setattr(chat, "generate_response", boom)
+    # Patch the same call site inside core where the LLM is invoked.
+    monkeypatch.setattr(
+        "datu.services.sql_generator.core.generate_response",
+        boom,
+        raising=True,
+    )
 
     app = _make_app()
     transport = httpx.ASGITransport(app=app)
