@@ -55,6 +55,11 @@ async def test_happy_path_single_sql_block(monkeypatch):
         raising=True,
     )
     monkeypatch.setattr(
+        "datu.services.llm.fix_sql_error",
+        lambda sql_code, _err, _loop: sql_code,
+        raising=True,
+    )
+    monkeypatch.setattr(
         "datu.services.sql_generator.core.get_query_execution_time_estimate",
         lambda _c: "Fast (<1s)",
         raising=True,
