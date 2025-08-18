@@ -54,7 +54,7 @@ python -m venv .venv
 source .venv/bin/activate  # On Windows use: .venv\Scripts\activate
 
 #Install datu core
-pip install datu-core
+pip install 'datu-core[all]'
 
 ```
 
