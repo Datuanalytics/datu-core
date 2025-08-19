@@ -1,8 +1,6 @@
 """Factory class to create database connectors based on dbt profiles"""
 
 from datu.integrations.dbt.config import get_dbt_profiles_settings
-from datu.integrations.postgre_sql.postgre_connector import PostgreSQLConnector
-from datu.integrations.sql_server.sqldb_connector import SQLServerConnector
 
 
 class DBConnectorFactory:
@@ -39,8 +37,12 @@ class DBConnectorFactory:
         db_type = config.type
 
         if db_type == "postgres":
+            from datu.integrations.postgre_sql.postgre_connector import PostgreSQLConnector
+
             return PostgreSQLConnector(config)
         elif db_type == "sqlserver":
+            from datu.integrations.sql_server.sqldb_connector import SQLServerConnector
+
             return SQLServerConnector(config)
         else:
             raise ValueError(f"Unsupported database type: {db_type}")

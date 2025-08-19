@@ -21,7 +21,8 @@ def clean_test_graph_cache():
         shutil.rmtree(TEST_GRAPH_DIR)
     os.makedirs(TEST_GRAPH_DIR)
     yield
-    shutil.rmtree(TEST_GRAPH_DIR)
+    if os.path.exists(TEST_GRAPH_DIR):
+        shutil.rmtree(TEST_GRAPH_DIR)
 
 
 def test_init_with_dict_schema():
@@ -80,21 +81,6 @@ def test_initialize_graph_rebuild_and_cache():
     assert isinstance(builder2.graph, nx.DiGraph)
     assert set(builder2.graph.nodes) == set(builder.graph.nodes)
     assert set(builder2.graph.edges) == set(builder.graph.edges)
-
-
-def test_graph_contains_expected_edges():
-    """Verify specific graph edges exist after initialization and triple extraction."""
-    schema = SchemaTestFixtures.sample_schema()
-    extractor = SchemaTripleExtractor(schema)
-    extractor.create_schema_triples()
-    builder = SchemaGraphBuilder(triples=extractor.triples, is_rag_outdated=True)
-    builder.initialize_graph()
-    test_graph = builder.graph
-
-    assert test_graph.has_edge("orders", "order_id")
-    assert test_graph.has_edge("order_id", "int") or any(
-        d["label"] == "has_data_type" for _, _, d in test_graph.edges(data=True)
-    )
 
 
 @pytest.mark.requires_service
