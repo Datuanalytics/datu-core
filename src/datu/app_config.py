@@ -17,6 +17,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from datu.integrations.config import IntegrationConfigs
 from datu.mcp.config import MCPConfig
 from datu.services.config import SchemaRAGConfig
+from datu.telemetry.config import TelemetryConfig
 
 
 class Environment(Enum):
@@ -110,7 +111,8 @@ class DatuConfig(BaseSettings):
         description="Configuration settings for schema RAG (Retrieval-Augmented Generation).",
     )
     enable_anonymization: bool = False
-
+    enable_anonymized_telemetry: bool = True
+    telemetry: TelemetryConfig | None = Field(default_factory=TelemetryConfig)
     model_config = SettingsConfigDict(
         env_prefix="datu_",
         env_nested_delimiter="__",
