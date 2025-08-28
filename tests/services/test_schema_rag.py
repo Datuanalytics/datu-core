@@ -5,8 +5,10 @@ import types
 
 if "mcp_use" not in sys.modules:
     shim = types.ModuleType("mcp_use")
-    class _Dummy:  # minimal stub so 'from mcp_use import MCPAgent' works
+
+    class _Dummy:
         pass
+
     shim.MCPAgent = _Dummy
     sys.modules["mcp_use"] = shim
 
