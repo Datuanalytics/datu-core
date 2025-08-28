@@ -1,7 +1,13 @@
+"""Tests for PostHog telemetry client."""
+
+from pathlib import Path
 from unittest.mock import patch
+
+# pylint: disable=import-outside-toplevel disable=redefined-outer-name disable=unused-argument
 
 
 def test_posthog_client_initialization(posthog_client, telemetry_settings):
+    """Test that PostHogClient initializes correctly."""
     from datu.telemetry.product.posthog import PostHogClient
 
     assert posthog_client.settings == telemetry_settings
@@ -12,6 +18,7 @@ def test_posthog_client_initialization(posthog_client, telemetry_settings):
 
 
 def test_user_id_creation(tmp_path):
+    """Test that user ID is created and read correctly."""
     from datu.telemetry.config import TelemetryConfig
     from datu.telemetry.product.posthog import PostHogClient
 
@@ -30,8 +37,7 @@ def test_user_id_creation(tmp_path):
 
 
 def test_user_id_fallback_patch():
-    from pathlib import Path
-
+    """Test that user ID falls back to unknown when file access fails."""
     from datu.telemetry.config import TelemetryConfig
     from datu.telemetry.product.posthog import PostHogClient
 
@@ -47,6 +53,7 @@ def test_user_id_fallback_patch():
 
 
 def test_base_context(monkeypatch):
+    """Test that base context is created correctly."""
     from datu.telemetry.config import TelemetryConfig
     from datu.telemetry.product.posthog import PostHogClient
 
@@ -61,6 +68,7 @@ def test_base_context(monkeypatch):
 
 
 def test_capture_single_event(monkeypatch, posthog_client, sample_event):
+    """Test that a single event is captured correctly."""
     # Ensure _send is called
     called = {}
 
@@ -74,6 +82,7 @@ def test_capture_single_event(monkeypatch, posthog_client, sample_event):
 
 
 def test_capture_batching(monkeypatch):
+    """Test that event batching works correctly."""
     from datu.telemetry.config import TelemetryConfig
     from datu.telemetry.product.events import ProductTelemetryEvent
     from datu.telemetry.product.posthog import PostHogClient

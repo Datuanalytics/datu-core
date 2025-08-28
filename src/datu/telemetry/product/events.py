@@ -1,3 +1,5 @@
+"""Telemetry events for product usage."""
+
 from typing import Any, ClassVar, Dict
 
 from datu.app_config import settings

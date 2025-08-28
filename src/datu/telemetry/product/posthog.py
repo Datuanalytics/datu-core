@@ -1,3 +1,5 @@
+"""PostHog telemetry client for product usage tracking."""
+
 import importlib
 import logging
 import platform

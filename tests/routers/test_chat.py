@@ -1,4 +1,5 @@
-# tests/routers/test_chat.py
+"""Test suite for the chat router."""
+
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
@@ -8,6 +9,7 @@ from datu.base.chat_schema import ChatMessage, ChatRequest
 
 
 def _client() -> TestClient:
+    """Create a test client for the chat router."""
     app = FastAPI()
     app.include_router(chat.router, prefix="/chat/sql")
     return TestClient(app)
@@ -18,6 +20,8 @@ def _client() -> TestClient:
 
 @pytest.mark.asyncio
 async def test_happy_path_with_mcp(monkeypatch):
+    """Test that the happy path with MCP enabled works correctly."""
+
     async def fake_generate_response(_msgs, _sys):
         return "Query name: Sales\n```sql\nSELECT 1;\n```"
 
@@ -36,6 +40,8 @@ async def test_happy_path_with_mcp(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_error_path_with_mcp(monkeypatch):
+    """Test that the error path with MCP enabled works correctly."""
+
     async def boom(*_a, **_k):
         raise RuntimeError("LLM down")
 
@@ -55,6 +61,8 @@ async def test_error_path_with_mcp(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_passthrough_to_generate_sql_core(monkeypatch):
+    """Test that the passthrough to generate_sql_core works correctly."""
+
     async def fake_generate_sql_core(request: ChatRequest):
         return {"assistant_response": "core path", "queries": []}
 

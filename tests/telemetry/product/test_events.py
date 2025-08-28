@@ -1,9 +1,12 @@
+"""Tests for telemetry product events."""
+
 import pytest
 
 from datu.telemetry.product.events import MCPClientEvent, OpenAIEvent, ProductTelemetryEvent
 
 
 def test_event_initialization(event, sample_event_data):
+    """Test that event initializes correctly with given data."""
     assert event.properties["event_name"] == sample_event_data["event_name"]
     assert event.properties["user_id"] == sample_event_data["user_id"]
     assert event.properties["timestamp"] == sample_event_data["timestamp"]
@@ -11,11 +14,13 @@ def test_event_initialization(event, sample_event_data):
 
 
 def test_event_name_and_batch_key(event):
+    """Test that event name and batch key are set correctly."""
     assert event.name == "ProductTelemetryEvent"
     assert event.batch_key == event.name
 
 
 def test_batching_same_type(event):
+    """Test that batching works for events of the same type."""
     other = ProductTelemetryEvent(event_name="other_event")
     batched = event.batch(other)
 
@@ -25,6 +30,8 @@ def test_batching_same_type(event):
 
 
 def test_batching_different_type_raises():
+    """Test that batching raises an error for events of different types."""
+
     class AnotherEvent(ProductTelemetryEvent):
         pass
 
@@ -35,6 +42,7 @@ def test_batching_different_type_raises():
 
 
 def test_batch_size_increment(event):
+    """Test that batch size increments correctly."""
     # Initial batch_size
     assert event.batch_size == 1
     event.batch(ProductTelemetryEvent())
@@ -44,6 +52,7 @@ def test_batch_size_increment(event):
 
 
 def test_mcp_client_event_properties():
+    """Test that MCPClientEvent initializes correctly with given data."""
     servers = ["playwright", "puppeteer"]
     event = MCPClientEvent(server_names=servers)
 
@@ -56,7 +65,8 @@ def test_mcp_client_event_properties():
 
 
 def test_openai_event_properties():
-    from datu.app_config import get_app_settings
+    """Test that OpenAIEvent initializes correctly with given data."""
+    from datu.app_config import get_app_settings  # pylint: disable=import-outside-toplevel
 
     app_settings = get_app_settings()
     data = {"user_id": "123", "action": "test"}

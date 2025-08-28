@@ -23,6 +23,8 @@ from src.datu.mcp.tools.sql_generator import sql_generate
 from src.datu.services.sql_generator import core
 from src.datu.services.sql_generator.normalizer import normalize_for_preview
 
+# pylint: disable=redefined-outer-name disable=unused-argument disable=import-outside-toplevel
+
 
 @pytest.fixture(autouse=True)
 def _reset_db_connector(monkeypatch):
