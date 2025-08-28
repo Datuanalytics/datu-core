@@ -1,24 +1,14 @@
 """Sample schema fixtures for testing schema extraction and caching."""
 
-import sys
-import types
-
-if "mcp_use" not in sys.modules:
-    shim = types.ModuleType("mcp_use")
-
-    class _Dummy:
-        pass
-
-    shim.MCPAgent = _Dummy
-    sys.modules["mcp_use"] = shim
-
 import os
 import shutil
 
 import networkx as nx
 import pytest
 
-from datu.services.schema_rag import SchemaGraphBuilder, SchemaRAG, SchemaTripleExtractor
+pytestmark = pytest.mark.requires_service
+
+from datu.services.schema_rag import SchemaGraphBuilder, SchemaTripleExtractor
 
 from tests.helpers.sample_schemas import SchemaTestFixtures
 
@@ -97,6 +87,8 @@ def test_initialize_graph_rebuild_and_cache():
 @pytest.mark.requires_service
 def test_schema_rag_run_query_returns_filtered_schema_dict():
     """Test SchemaRAG end-to-end run_query method returns filtered schema."""
+    from datu.services.schema_rag import SchemaRAG
+
     schema = SchemaTestFixtures.sample_schema()
     rag = SchemaRAG(schema)
     result = rag.run_query(["List all customer orders"])
