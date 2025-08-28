@@ -113,8 +113,7 @@ class PostHogClient:
                 properties={**self._base_context(), **POSTHOG_EVENT_SETTINGS, **event.properties},
             )
         except Exception:
-            # silently fail
-            pass
+            logger.debug("Failed to send telemetry event", exc_info=True)
 
 
 @lru_cache(maxsize=1)
