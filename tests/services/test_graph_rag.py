@@ -9,8 +9,6 @@ import pytest
 
 from datu.services.schema_rag import SchemaGraphBuilder, SchemaRAG, SchemaTripleExtractor
 
-from tests.helpers.sample_schemas import SchemaTestFixtures
-
 TEST_GRAPH_DIR = "test_graph_rag"
 
 
@@ -25,18 +23,17 @@ def clean_test_graph_cache():
         shutil.rmtree(TEST_GRAPH_DIR)
 
 
-def test_init_with_dict_schema():
+def test_init_with_dict_schema(raw_schema_dict):
     """Test SchemaGraphBuilder initialization with a raw schema dictionary."""
-    schema_dict = SchemaTestFixtures.raw_schema_dict()
-    extractor = SchemaTripleExtractor(schema_dict)
+    extractor = SchemaTripleExtractor(raw_schema_dict)
     extractor.create_schema_triples()
     assert extractor.timestamp == 1234567890.0
     assert len(extractor.schema_profiles) == 1
 
 
-def test_extract_triples_output():
+def test_extract_triples_output(sample_schema):
     """Test that triples are extracted correctly from schema objects."""
-    schema_profiles = SchemaTestFixtures.sample_schema()
+    schema_profiles = sample_schema()
     extractor = SchemaTripleExtractor(schema_profiles)
     extractor.paths["triples"] = os.path.join(TEST_GRAPH_DIR, "triples.json")
     extractor.paths["meta"] = os.path.join(TEST_GRAPH_DIR, "meta.json")
@@ -61,9 +58,10 @@ def test_is_graph_outdated_returns_true_for_missing_files(tmp_path):
     assert extractor.is_rag_outdated() is True
 
 
-def test_initialize_graph_rebuild_and_cache():
+@pytest.mark.parametrize("timestamp", [9999.0])
+def test_initialize_graph_rebuild_and_cache(sample_schema, timestamp):
     """Test graph initialization rebuilds and caches the graph correctly."""
-    schema = SchemaTestFixtures.sample_schema(timestamp=9999.0)
+    schema = sample_schema(timestamp=timestamp)
     extractor = SchemaTripleExtractor(schema)
     extractor.create_schema_triples()
     builder = SchemaGraphBuilder(triples=extractor.triples, is_rag_outdated=True)
@@ -84,10 +82,9 @@ def test_initialize_graph_rebuild_and_cache():
 
 
 @pytest.mark.requires_service
-def test_schema_rag_run_query_returns_filtered_schema_dict():
+def test_schema_rag_run_query_returns_filtered_schema_dict(sample_schema):
     """Test SchemaRAG end-to-end run_query method returns filtered schema."""
-    schema = SchemaTestFixtures.sample_schema()
-    rag = SchemaRAG(schema)
+    rag = SchemaRAG(sample_schema)
     result = rag.run_query(["List all customer orders"])
     assert isinstance(result, dict)
     assert "schema_info" in result

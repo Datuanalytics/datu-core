@@ -1,5 +1,7 @@
 """Sample schema fixtures for testing schema extraction and caching."""
 
+import pytest
+
 from datu.base.base_connector import SchemaInfo, TableInfo
 from datu.schema_extractor.schema_cache import SchemaGlossary
 
@@ -52,3 +54,17 @@ class SchemaTestFixtures:
                 }
             ],
         }
+
+
+@pytest.fixture
+def sample_schema():
+    # Return a function that can generate schemas with parameters
+    def _factory(timestamp: float = 1234567890.0):
+        return SchemaTestFixtures.sample_schema(timestamp=timestamp)
+
+    return _factory
+
+
+@pytest.fixture
+def raw_schema_dict():
+    return SchemaTestFixtures.raw_schema_dict()
