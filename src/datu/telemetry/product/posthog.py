@@ -9,11 +9,10 @@ from typing import Any, Dict, Optional
 
 import posthog
 
-from datu.app_config import Environment, get_app_settings, get_logger
+from datu.app_config import Environment, get_logger, settings
 from datu.telemetry.config import TelemetryConfig as TelemetrySettings
 from datu.telemetry.product.events import ProductTelemetryEvent
 
-app_settings = get_app_settings()
 logger = get_logger(__name__)
 
 POSTHOG_EVENT_SETTINGS = {"$process_person_profile": False}
@@ -25,17 +24,17 @@ class PostHogClient:
     UNKNOWN_USER_ID = "UNKNOWN"
     USER_ID_PATH = Path.home() / ".cache" / "datu-core" / "telemetry_user_id"
 
-    def __init__(self, settings: Optional[TelemetrySettings]) -> None:
-        self.settings = settings or TelemetrySettings()
+    def __init__(self, telemetry_settings: Optional[TelemetrySettings]) -> None:
+        self.settings = telemetry_settings or TelemetrySettings()
         self._batched_events: Dict[str, ProductTelemetryEvent] = {}
         self._user_id: str = ""
         self._user_id_path: Path = self.USER_ID_PATH
         self.session_id = str(uuid.uuid4())
 
         if (
-            not app_settings.enable_anonymized_telemetry
+            not settings.enable_anonymized_telemetry
             or "pytest" in sys.modules
-            or app_settings.app_environment in [Environment.TEST.value]
+            or settings.app_environment in [Environment.TEST.value]
         ):
             posthog.disabled = True
         else:
@@ -87,7 +86,7 @@ class PostHogClient:
 
     def capture(self, event: ProductTelemetryEvent) -> None:
         """Capture an event (with simple batching)."""
-        if not app_settings.enable_anonymized_telemetry or not self.settings.api_key:
+        if not settings.enable_anonymized_telemetry or not self.settings.api_key:
             return
 
         if event.max_batch_size == 1:
@@ -121,4 +120,4 @@ class PostHogClient:
 @lru_cache(maxsize=1)
 def get_posthog_client() -> PostHogClient:
     """Get the PostHog telemetry client."""
-    return PostHogClient(app_settings.telemetry)
+    return PostHogClient(settings.telemetry)

@@ -16,7 +16,7 @@ def test_user_id_creation(tmp_path):
     from datu.telemetry.product.posthog import PostHogClient
 
     path = tmp_path / "telemetry_user_id"
-    client = PostHogClient(settings=TelemetryConfig())
+    client = PostHogClient(telemetry_settings=TelemetryConfig())
     client._user_id_path = path
 
     # file does not exist yet
@@ -35,7 +35,7 @@ def test_user_id_fallback_patch():
     from datu.telemetry.config import TelemetryConfig
     from datu.telemetry.product.posthog import PostHogClient
 
-    client = PostHogClient(settings=TelemetryConfig())
+    client = PostHogClient(telemetry_settings=TelemetryConfig())
 
     with (
         patch.object(Path, "exists", side_effect=OSError("fail")),
@@ -50,7 +50,7 @@ def test_base_context(monkeypatch):
     from datu.telemetry.config import TelemetryConfig
     from datu.telemetry.product.posthog import PostHogClient
 
-    client = PostHogClient(settings=TelemetryConfig(package_name="nonexistent_pkg"))
+    client = PostHogClient(telemetry_settings=TelemetryConfig(package_name="nonexistent_pkg"))
 
     context = client._base_context()
     assert "python_version" in context
@@ -79,7 +79,7 @@ def test_capture_batching(monkeypatch):
     from datu.telemetry.product.posthog import PostHogClient
 
     settings = TelemetryConfig(api_key="dummy")
-    client = PostHogClient(settings=settings)
+    client = PostHogClient(telemetry_settings=settings)
 
     class BatchEvent(ProductTelemetryEvent):
         max_batch_size = 2

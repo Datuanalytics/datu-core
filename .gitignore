@@ -62,3 +62,4 @@ test_schema_cache.json
 
 .cache/
 site/
+.coverage*

@@ -39,4 +39,4 @@ def telemetry_settings():
 def posthog_client(telemetry_settings):
     from datu.telemetry.product.posthog import PostHogClient
 
-    return PostHogClient(settings=telemetry_settings)
+    return PostHogClient(telemetry_settings=telemetry_settings)

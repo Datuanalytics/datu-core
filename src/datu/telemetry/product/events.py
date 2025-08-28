@@ -1,8 +1,6 @@
 from typing import Any, ClassVar, Dict
 
-from datu.app_config import get_app_settings
-
-app_settings = get_app_settings()
+from datu.app_config import settings
 
 
 class ProductTelemetryEvent:
@@ -47,4 +45,4 @@ class OpenAIEvent(ProductTelemetryEvent):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self._props["openai_model"] = app_settings.openai_model
+        self._props["openai_model"] = settings.openai_model

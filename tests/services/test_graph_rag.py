@@ -7,8 +7,6 @@ import shutil
 import networkx as nx
 import pytest
 
-from datu.services.schema_rag import SchemaGraphBuilder, SchemaRAG, SchemaTripleExtractor
-
 TEST_GRAPH_DIR = "test_graph_rag"
 
 
@@ -25,6 +23,8 @@ def clean_test_graph_cache():
 
 def test_init_with_dict_schema(raw_schema_dict):
     """Test SchemaGraphBuilder initialization with a raw schema dictionary."""
+    from datu.services.schema_rag import SchemaTripleExtractor
+
     extractor = SchemaTripleExtractor(raw_schema_dict)
     extractor.create_schema_triples()
     assert extractor.timestamp == 1234567890.0
@@ -33,6 +33,8 @@ def test_init_with_dict_schema(raw_schema_dict):
 
 def test_extract_triples_output(sample_schema):
     """Test that triples are extracted correctly from schema objects."""
+    from datu.services.schema_rag import SchemaTripleExtractor
+
     schema_profiles = sample_schema()
     extractor = SchemaTripleExtractor(schema_profiles)
     extractor.paths["triples"] = os.path.join(TEST_GRAPH_DIR, "triples.json")
@@ -43,6 +45,8 @@ def test_extract_triples_output(sample_schema):
 
 def test_get_attr_dict_vs_object():
     """Test the helper method _get_attr for both dicts and objects."""
+    from datu.services.schema_rag import SchemaTripleExtractor
+
     extractor = SchemaTripleExtractor([])
     obj_dict = {"key1": "val1"}
     obj_class = type("Dummy", (), {"attr1": "key2"})()
@@ -52,6 +56,8 @@ def test_get_attr_dict_vs_object():
 
 def test_is_graph_outdated_returns_true_for_missing_files(tmp_path):
     """Test is_graph_outdated returns True when graph or meta files are missing."""
+    from datu.services.schema_rag import SchemaTripleExtractor
+
     extractor = SchemaTripleExtractor({"timestamp": 1234, "schema_info": []})
     extractor.graph_path = str(tmp_path / "missing_triples.json")
     extractor.meta_path = str(tmp_path / "missing_meta.json")
@@ -61,6 +67,8 @@ def test_is_graph_outdated_returns_true_for_missing_files(tmp_path):
 @pytest.mark.parametrize("timestamp", [9999.0])
 def test_initialize_graph_rebuild_and_cache(sample_schema, timestamp):
     """Test graph initialization rebuilds and caches the graph correctly."""
+    from datu.services.schema_rag import SchemaGraphBuilder, SchemaTripleExtractor
+
     schema = sample_schema(timestamp=timestamp)
     extractor = SchemaTripleExtractor(schema)
     extractor.create_schema_triples()
@@ -84,6 +92,8 @@ def test_initialize_graph_rebuild_and_cache(sample_schema, timestamp):
 @pytest.mark.requires_service
 def test_schema_rag_run_query_returns_filtered_schema_dict(sample_schema):
     """Test SchemaRAG end-to-end run_query method returns filtered schema."""
+    from datu.services.schema_rag import SchemaRAG
+
     rag = SchemaRAG(sample_schema)
     result = rag.run_query(["List all customer orders"])
     assert isinstance(result, dict)
