@@ -13,7 +13,7 @@ from fastapi.staticfiles import StaticFiles
 from datu.app_config import get_logger, settings
 from datu.routers import chat, metadata, transformations
 from datu.schema_extractor.schema_cache import load_schema_cache
-from datu.telemetry.product.events import OpenAIEvents
+from datu.telemetry.product.events import OpenAIEvent
 from datu.telemetry.product.posthog import get_posthog_client
 
 logger = get_logger(__name__)
@@ -59,7 +59,7 @@ def start_app() -> None:
     """
     logger.info("Starting the FastAPI application...")
     posthog_client = get_posthog_client()
-    posthog_client.capture(OpenAIEvents())
+    posthog_client.capture(OpenAIEvent())
     uvicorn.run(app, host=settings.host, port=settings.port)
 
 

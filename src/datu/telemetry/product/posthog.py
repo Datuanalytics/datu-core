@@ -9,7 +9,7 @@ from typing import Any, Dict, Optional
 
 import posthog
 
-from datu.app_config import get_app_settings, get_logger
+from datu.app_config import Environment, get_app_settings, get_logger
 from datu.telemetry.config import TelemetryConfig as TelemetrySettings
 from datu.telemetry.product.events import ProductTelemetryEvent
 
@@ -30,8 +30,13 @@ class PostHogClient:
         self._batched_events: Dict[str, ProductTelemetryEvent] = {}
         self._user_id: str = ""
         self._user_id_path: Path = self.USER_ID_PATH
+        self.session_id = str(uuid.uuid4())
 
-        if not app_settings.enable_anonymized_telemetry or "pytest" in sys.modules:
+        if (
+            not app_settings.enable_anonymized_telemetry
+            or "pytest" in sys.modules
+            or app_settings.app_environment in [Environment.TEST.value]
+        ):
             posthog.disabled = True
         else:
             logger.info("Enabled anonymized telemetry. See https://docs.datu.fi for more information.")
@@ -63,11 +68,21 @@ class PostHogClient:
         except importlib.metadata.PackageNotFoundError:
             pkg_version = "unknown"
 
+        extras_installed: Dict[str, bool] = {}
+        try:
+            dist = importlib.metadata.distribution(self.settings.package_name)
+            extras = dist.metadata.get_all("Provides-Extra") or []
+            for extra in extras:
+                extras_installed[extra] = True
+        except importlib.metadata.PackageNotFoundError:
+            extras_installed = {}
+
         return {
             "python_version": sys.version.split()[0],
             "os": platform.system(),
             "os_version": platform.release(),
             "package_version": pkg_version,
+            "extras_installed": extras_installed,
         }
 
     def capture(self, event: ProductTelemetryEvent) -> None:

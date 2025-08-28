@@ -57,6 +57,13 @@ class DatuConfig(BaseSettings):
         schema_sample_limit (int): The maximum number of rows to sample from the schema.
         schema_categorical_threshold (int): The threshold for categorical columns in the schema.
         enable_schema_rag (bool): Enable RAG for schema extraction.
+        enable_anonymized_telemetry (bool): Enable anonymized telemetry. Default is True.
+        app_environment (str): The application environment (e.g., "dev", "test", "prod"). Default is "dev".
+        telemetry (TelemetryConfig | None): Configuration settings for telemetry.
+        enable_mcp (bool): Whether to enable MCP integration. Default is False.
+        mcp (MCPConfig | None): Configuration settings for MCP integration.
+        enable_schema_rag (bool): Enable RAG for schema extraction.
+        schema_rag (SchemaRAGConfig | None): Configuration settings for schema RAG.
 
     Attributes:
         host (str): The host address for the application.
@@ -78,7 +85,8 @@ class DatuConfig(BaseSettings):
         mcp (MCPConfig | None): Configuration settings for MCP integration.
         enable_schema_rag (bool): Enable RAG for schema extraction.
         schema_rag (SchemaRAGConfig | None): Configuration settings for schema RAG.
-
+        enable_anonymized_telemetry (bool): Enable anonymized telemetry.
+        telemetry (TelemetryConfig | None): Configuration settings for telemetry.
 
     """
 

@@ -1,6 +1,6 @@
 from typing import Any, ClassVar, Dict
 
-from datu.app_config import get_app_settings, get_logger
+from datu.app_config import get_app_settings
 
 app_settings = get_app_settings()
 
@@ -34,15 +34,15 @@ class ProductTelemetryEvent:
         return self
 
 
-class MCPClientStartEvent(ProductTelemetryEvent):
+class MCPClientEvent(ProductTelemetryEvent):
     """Event for when the MCP client starts."""
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self._props["mcp_client_enabled"] = app_settings.mcp_client_enabled
+    def __init__(self, server_names: list[str]):
+        super().__init__()
+        self._props["mcp_server_names"] = server_names
 
 
-class OpenAIEvents(ProductTelemetryEvent):
+class OpenAIEvent(ProductTelemetryEvent):
     """Event for OpenAI-related telemetry."""
 
     def __init__(self, **kwargs):
