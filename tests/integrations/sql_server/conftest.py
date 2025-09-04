@@ -1,6 +1,6 @@
 """Common fixtures for tests in integrations sql_server module ."""
 
-# pylint: disable=redefined-outer-name
+# pylint: disable=redefined-outer-name disable=unused-argument disable=import-outside-toplevel
 import pytest
 
 
